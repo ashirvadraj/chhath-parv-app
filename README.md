@@ -12,8 +12,8 @@
   <a href="https://github.com/ashirvadraj/chhath-parv-app/raw/main/ChhathParv.apk">
     <img src="https://img.shields.io/badge/Download-ChhathParv.apk-orange?style=for-the-badge&logo=android" alt="Download APK" />
   </a>
-  <a href="https://github.com/ashirvadraj/chhath-parv-app/releases/tag/v1.1.0">
-    <img src="https://img.shields.io/badge/Release-v1.1.0-green?style=for-the-badge&logo=github" alt="Release v1.1.0" />
+  <a href="https://github.com/ashirvadraj/chhath-parv-app/releases/tag/v1.2.0">
+    <img src="https://img.shields.io/badge/Release-v1.2.0-green?style=for-the-badge&logo=github" alt="Release v1.2.0" />
   </a>
 </p>
 
@@ -26,7 +26,7 @@
 
 ## 📲 Direct APK Download
 You can download and install the compiled Android APK directly onto your phone:
-👉 [**Download from GitHub Release (v1.1.0 Latest APK)**](https://github.com/ashirvadraj/chhath-parv-app/releases/download/v1.1.0/ChhathParv.apk)
+👉 [**Download from GitHub Release (v1.2.0 Latest APK)**](https://github.com/ashirvadraj/chhath-parv-app/releases/download/v1.2.0/ChhathParv.apk)
 👉 [**Download ChhathParv.apk (Direct from Repo)**](https://github.com/ashirvadraj/chhath-parv-app/raw/main/ChhathParv.apk)
 
 ---
