@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <radialGradient id="khnBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#451A03"/>
+      <stop offset="100%" stop-color="#140500"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="500" height="500" fill="url(#khnBg)"/>
+
+  <!-- Sacred Mud Stove (माटी का चूल्हा) with Mango Firewood -->
+  <path d="M120 430 Q250 360 380 430 L350 490 L150 490 Z" fill="#78350F" stroke="#92400E" stroke-width="4"/>
+  <!-- Fire Flame Inside Chulha -->
+  <path d="M250 450 Q265 390 250 360 Q235 390 250 450 Z" fill="#FDE047"/>
+  <path d="M250 450 Q260 410 250 380 Q240 410 250 450 Z" fill="#DC2626"/>
+
+  <!-- Clay Pot with Jaggery Kheer (माटी की हांडी में रसियाव) -->
+  <g transform="translate(250, 310)">
+    <ellipse cx="0" cy="30" rx="80" ry="55" fill="#78350F" stroke="#92400E" stroke-width="4"/>
+    <ellipse cx="0" cy="-20" rx="60" ry="18" fill="#451A03" stroke="#92400E" stroke-width="3"/>
+    <!-- Golden Jaggery Milk Kheer (रसियाव) -->
+    <ellipse cx="0" cy="-20" rx="55" ry="14" fill="#D97706"/>
+    <!-- Steam Rising -->
+    <path d="M-20 -30 Q-30 -60 -10 -90 M10 -30 Q30 -60 10 -90 M0 -30 Q-10 -70 15 -100" 
+          stroke="#FEF08A" stroke-width="2.5" fill="none" opacity="0.6"/>
+  </g>
+
+  <!-- Plate of Wheat Rotis (घी लगी रोटी) -->
+  <g transform="translate(360, 240)">
+    <ellipse cx="0" cy="0" rx="60" ry="30" fill="#CA8A04" stroke="#EAB308" stroke-width="3"/>
+    <ellipse cx="0" cy="-8" rx="48" ry="22" fill="#FEF08A" stroke="#CA8A04" stroke-width="2"/>
+    <ellipse cx="-5" cy="-14" rx="46" ry="20" fill="#FEF9C3" stroke="#CA8A04" stroke-width="2"/>
+  </g>
+
+  <!-- Sacred Banana Leaf (केले का पत्ता प्रसाद हेतु) -->
+  <path d="M60 260 Q130 180 200 240 Q130 300 60 260 Z" fill="#22C55E" stroke="#166534" stroke-width="3"/>
+  <line x1="65" y1="260" x2="195" y2="240" stroke="#15803D" stroke-width="2"/>
+
+  <!-- Header Banner -->
+  <rect x="20" y="20" width="220" height="42" rx="12" fill="#000000" opacity="0.6"/>
+  <text x="35" y="47" fill="#FEF08A" font-size="18" font-family="sans-serif" font-weight="bold">खरना रसियाव-रोटी</text>
+</svg>

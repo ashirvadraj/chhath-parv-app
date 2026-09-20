@@ -46,10 +46,11 @@ export class NativeMediaService {
     }
   }
 
-  public static async sendChhathReminderNotification(daysRemaining: number, nextRitual: string): Promise<boolean> {
+  public static async sendChhathReminderNotification(daysRemaining: number, nextRitual: string, year: number = 2026): Promise<boolean> {
     try {
-      const title = `🌅 छठ महापर्व 2026: केवल ${daysRemaining} दिन शेष`;
-      const message = `अगला पावन अनुष्ठान: ${nextRitual}। आज की घाट तैयारी और पूजन सामग्री सूची अभी देखें।`;
+      const daysText = daysRemaining <= 0 ? 'आज' : `केवल ${daysRemaining} दिन शेष`;
+      const title = `🌅 छठ महापर्व ${year}: ${daysText}`;
+      const message = `पावन अनुष्ठान: ${nextRitual}। घाट तैयारी, पूजन सामग्री व पावन छठ गीत अभी ऐप में देखें।`;
       const res = await NativeMediaPlugin.sendChhathReminder({
         title,
         message,

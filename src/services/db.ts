@@ -738,7 +738,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "डलिया सजल बा",
     "artwork": "/logo.svg",
     "duration": 290,
-    "audioUrl": "https://archive.org/download/ugihen-suraj-gosaiyan-hey/Ugihen-Suraj-Gosaiyan-Hey.mp3",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/kacha%20Hey%20Kee.mp3",
     "isFavorite": false,
     "sourceNote": "बांस की डलिया में फल व पूजन सामग्री सजाने का गीत",
     "lyrics": "काँच ही बाँस के डलिया सजाय के, चलली व्रती घाट...\nगंगा मइया के तीरे बिछल बा, कंचन-वरन के पाट!\n\nसूप में नारियल, सेब, सिंघाड़ा, सुथनी कंदा भारी।\nछठी माई के दर्शन पाके, धन्य भईल संसारी..."
@@ -906,7 +906,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "खरना महाप्रसाद",
     "artwork": "/logo.svg",
     "duration": 295,
-    "audioUrl": "https://archive.org/download/maithilichathsongs/Chhaith%20Paavain.mp3",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Chhath%20Puja.mp3",
     "isFavorite": true,
     "sourceNote": "खरना के दिन रसियाव-रोटी प्रसाद का वितरण एवं निर्जला व्रत आरंभ",
     "lyrics": "खरना के पावन बेला, रसियाव महाप्रसाद...\nगुड़-दूध के खीर बने, मिटे सब अवसाद!\n\nव्रती भोजन पाके अब 36 घंटा निर्जला रहीं।\nछठी माई के शक्ति से कठिन साधना सहीहें..."
@@ -1121,7 +1121,13 @@ class AppDatabase {
   // Songs
   getSongs(): Song[] {
     const cached = this.get<Song[]>(STORAGE_KEYS.SONGS, []);
-    if (!cached || cached.length < INITIAL_SONGS.length || cached.some(s => !s.audioUrl || s.audioUrl.includes('.wav')) || cached[0]?.audioUrl !== 'audio/kaanche_hi_bansh.mp3') {
+    const needsRefresh = !cached || 
+      cached.length < INITIAL_SONGS.length || 
+      cached.some(s => !s.audioUrl || s.audioUrl.includes('.wav')) || 
+      cached[0]?.audioUrl !== 'audio/kaanche_hi_bansh.mp3' ||
+      cached[32]?.audioUrl !== INITIAL_SONGS[32]?.audioUrl;
+
+    if (needsRefresh) {
       const imported = (cached || []).filter(s => s.isLocal);
       const combined = [...INITIAL_SONGS, ...imported];
       this.saveSongs(combined);

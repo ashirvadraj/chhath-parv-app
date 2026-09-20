@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../services/db';
 import { PersonalNote, FastingTrackerState } from '../types';
@@ -29,11 +29,17 @@ export const MoreView: React.FC = () => {
   const [newNoteTitle, setNewNoteTitle] = useState('');
   const [newNoteContent, setNewNoteContent] = useState('');
 
+  const [selectedPhoto, setSelectedPhoto] = useState<{ title: string; category: string; url: string } | null>(null);
+
   const [galleryImages, setGalleryImages] = useState<{ id: string; title: string; category: string; url: string }[]>([
-    { id: '1', title: 'भगवान भास्कर को अर्घ्य', category: 'Surya Arghya', url: '/logo.svg' },
-    { id: '2', title: 'सूप एवं दउरा की सजावट', category: 'Daura', url: '/logo.svg' },
-    { id: '3', title: 'पवित्र पारंपरिक ठेकुआ', category: 'Thekua', url: '/logo.svg' },
-    { id: '4', title: 'गंगा घाट दीप प्रज्ज्वलन', category: 'Ghat', url: '/logo.svg' }
+    { id: '1', title: 'संध्या अर्घ्य (पहिला अरग)', category: 'Sandhya Arghya', url: '/gallery/sandhya_arghya.svg' },
+    { id: '2', title: 'उषा अर्घ्य (भोरवा अरग)', category: 'Usha Arghya', url: '/gallery/usha_arghya.svg' },
+    { id: '3', title: 'बांस का पावन दउरा व ईख', category: 'Chhath Daura', url: '/gallery/chhath_daura.svg' },
+    { id: '4', title: 'बांस का सूप व पूजन फल', category: 'Pavitra Soop', url: '/gallery/pavitra_soop.svg' },
+    { id: '5', title: 'पवित्र ठेकुआ महाप्रसाद', category: 'Thekua Prasad', url: '/gallery/thekua_prasad.svg' },
+    { id: '6', title: 'घाट पर कोसी भरना (दीपमाला)', category: 'Kosi Bharai', url: '/gallery/kosi_bharai.svg' },
+    { id: '7', title: 'खरना रसियाव-रोटी महाप्रसाद', category: 'Kharna Prasad', url: '/gallery/kharna_prasad.svg' },
+    { id: '8', title: 'नहाय-खाय कद्दू-भात', category: 'Nahay Khay', url: '/gallery/nahay_khay.svg' }
   ]);
 
   // Handle Note Save
@@ -358,13 +364,14 @@ export const MoreView: React.FC = () => {
             {galleryImages.map((img) => (
               <div 
                 key={img.id}
-                className="rounded-2xl overflow-hidden bg-white dark:bg-[#131927] border border-amber-200/50 dark:border-slate-800 shadow-sm group"
+                onClick={() => setSelectedPhoto(img)}
+                className="rounded-2xl overflow-hidden bg-white dark:bg-[#131927] border border-amber-200/50 dark:border-slate-800 shadow-sm group cursor-pointer hover:border-amber-400 transition-all hover:shadow-md"
               >
-                <div className="aspect-square bg-amber-950 p-2 flex items-center justify-center overflow-hidden">
+                <div className="aspect-square bg-amber-950/40 p-2 flex items-center justify-center overflow-hidden">
                   <img 
                     src={img.url} 
                     alt={img.title} 
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" 
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 rounded-xl" 
                   />
                 </div>
                 <div className="p-2.5">
@@ -378,6 +385,45 @@ export const MoreView: React.FC = () => {
               </div>
             ))}
           </div>
+
+          {/* Photo Lightbox Modal */}
+          {selectedPhoto && (
+            <div 
+              className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+              onClick={() => setSelectedPhoto(null)}
+            >
+              <div 
+                className="bg-stone-900 border border-amber-400/40 rounded-3xl p-4 max-w-sm w-full space-y-3 shadow-2xl relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="aspect-square rounded-2xl bg-black/40 flex items-center justify-center overflow-hidden border border-white/10">
+                  <img 
+                    src={selectedPhoto.url} 
+                    alt={selectedPhoto.title}
+                    className="w-full h-full object-contain" 
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                      {selectedPhoto.category}
+                    </span>
+                    <h3 className="text-base font-bold text-white font-devanagari">
+                      {selectedPhoto.title}
+                    </h3>
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedPhoto(null)}
+                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold"
+                  >
+                    बंद करें ✕
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

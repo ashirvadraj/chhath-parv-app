@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../services/db';
 import { NativeMediaService } from '../services/nativeMedia';
@@ -19,42 +19,101 @@ interface ChhathCountdownCardProps {
   onNavigateTab: (tab: NavTab) => void;
 }
 
+interface FestivalSchedule {
+  year: number;
+  nahayKhay: Date;
+  parana: Date;
+  dateStr: string;
+  shortDateStr: string;
+  thithiStr: string;
+}
+
+const CHHATH_SCHEDULE: FestivalSchedule[] = [
+  {
+    year: 2024,
+    nahayKhay: new Date('2024-11-05T06:00:00+05:30'),
+    parana: new Date('2024-11-08T09:00:00+05:30'),
+    dateStr: 'मंगलवार, 5 नवंबर 2024',
+    shortDateStr: '5 नवंबर 2024',
+    thithiStr: 'कार्तिक शुक्ल चतुर्थी'
+  },
+  {
+    year: 2025,
+    nahayKhay: new Date('2025-10-25T06:00:00+05:30'),
+    parana: new Date('2025-10-28T09:00:00+05:30'),
+    dateStr: 'शनिवार, 25 अक्टूबर 2025',
+    shortDateStr: '25 अक्टूबर 2025',
+    thithiStr: 'कार्तिक शुक्ल चतुर्थी'
+  },
+  {
+    year: 2026,
+    nahayKhay: new Date('2026-11-15T06:00:00+05:30'),
+    parana: new Date('2026-11-18T09:00:00+05:30'),
+    dateStr: 'रविवार, 15 नवंबर 2026',
+    shortDateStr: '15 नवंबर 2026',
+    thithiStr: 'कार्तिक शुक्ल चतुर्थी'
+  },
+  {
+    year: 2027,
+    nahayKhay: new Date('2027-11-04T06:00:00+05:30'),
+    parana: new Date('2027-11-07T09:00:00+05:30'),
+    dateStr: 'गुरुवार, 4 नवंबर 2027',
+    shortDateStr: '4 नवंबर 2027',
+    thithiStr: 'कार्तिक शुक्ल चतुर्थी'
+  }
+];
+
+const getNextChhath = (): FestivalSchedule => {
+  const now = new Date().getTime();
+  for (const f of CHHATH_SCHEDULE) {
+    if (now <= f.parana.getTime()) {
+      return f;
+    }
+  }
+  return CHHATH_SCHEDULE[2]; // Default to 2026
+};
+
+const calculateCountdown = (targetTime: number) => {
+  const now = new Date().getTime();
+  const diff = Math.max(0, targetTime - now);
+
+  const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+  return { days: d, hours: h, minutes: m, seconds: s };
+};
+
 export const ChhathCountdownCard: React.FC<ChhathCountdownCardProps> = ({ onNavigateTab }) => {
   const { t } = useLanguage();
   const [notificationSent, setNotificationSent] = useState(false);
 
-  // Target: Chhath Puja 2026 Nahay-Khay (Nov 15, 2026)
-  const targetDate = new Date('2026-11-15T06:00:00+05:30').getTime();
-  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+  // Determine current or upcoming festival dynamically
+  const nextFestival = useMemo(() => getNextChhath(), []);
+
+  // Compute countdown immediately so initial render is NEVER 0 days
+  const [timeLeft, setTimeLeft] = useState(() => calculateCountdown(nextFestival.nahayKhay.getTime()));
 
   useEffect(() => {
     const updateCountdown = () => {
-      const now = new Date().getTime();
-      const diff = Math.max(0, targetDate - now);
-
-      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-      setTimeLeft({ days: d, hours: h, minutes: m, seconds: s });
+      setTimeLeft(calculateCountdown(nextFestival.nahayKhay.getTime()));
     };
 
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
-  }, [targetDate]);
+  }, [nextFestival]);
 
-  // Send native Android notification on demand or on mount
+  // Send native Android notification on demand
   const handleSendReminder = async () => {
-    const success = await NativeMediaService.sendChhathReminderNotification(
-      timeLeft.days,
-      'नहाय-खाय (15 नवंबर 2026)'
+    const fresh = calculateCountdown(nextFestival.nahayKhay.getTime());
+    const effectiveDays = fresh.days > 0 ? fresh.days : 0;
+    
+    await NativeMediaService.sendChhathReminderNotification(
+      effectiveDays,
+      `नहाय-खाय (${nextFestival.shortDateStr})`,
+      nextFestival.year
     );
     setNotificationSent(true);
     setTimeout(() => setNotificationSent(false), 4000);
@@ -63,15 +122,19 @@ export const ChhathCountdownCard: React.FC<ChhathCountdownCardProps> = ({ onNavi
   // Automatically trigger native notification on first load if enabled
   useEffect(() => {
     const settings = db.getSettings();
-    if (settings.notificationsEnabled) {
+    if (settings.notificationsEnabled && timeLeft.days > 0) {
       const lastNotified = localStorage.getItem('chhath_last_notified_date');
       const todayStr = new Date().toISOString().split('T')[0];
       if (lastNotified !== todayStr) {
-        NativeMediaService.sendChhathReminderNotification(timeLeft.days, 'नहाय-खाय (15 नवंबर 2026)');
+        NativeMediaService.sendChhathReminderNotification(
+          timeLeft.days, 
+          `नहाय-खाय (${nextFestival.shortDateStr})`,
+          nextFestival.year
+        );
         localStorage.setItem('chhath_last_notified_date', todayStr);
       }
     }
-  }, [timeLeft.days]);
+  }, [timeLeft.days, nextFestival]);
 
   return (
     <div className="rounded-3xl bg-gradient-to-br from-amber-600 via-orange-600 to-rose-700 text-white p-5 sm:p-6 shadow-xl relative overflow-hidden border border-amber-300/30">
@@ -84,7 +147,7 @@ export const ChhathCountdownCard: React.FC<ChhathCountdownCardProps> = ({ onNavi
         <div className="flex items-center justify-between">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-black/25 backdrop-blur-md text-amber-200 text-xs font-semibold border border-amber-300/30">
             <Sun className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
-            <span>छठ महापर्व 2026</span>
+            <span>छठ महापर्व {nextFestival.year}</span>
           </div>
 
           <button
@@ -99,7 +162,7 @@ export const ChhathCountdownCard: React.FC<ChhathCountdownCardProps> = ({ onNavi
             {notificationSent ? (
               <>
                 <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-                <span>नोटिफिकेशन भेजा गया!</span>
+                <span>रिमाइंडर भेजा गया!</span>
               </>
             ) : (
               <>
@@ -116,7 +179,11 @@ export const ChhathCountdownCard: React.FC<ChhathCountdownCardProps> = ({ onNavi
             जय छठी मईया • पावन उल्टी गिनती
           </h2>
           <p className="text-xs sm:text-sm text-amber-100/90 mt-1">
-            लोक आस्था के महापर्व छठ में केवल <strong className="text-amber-200 font-black">{timeLeft.days} दिन</strong> शेष हैं!
+            {timeLeft.days > 0 ? (
+              <>लोक आस्था के महापर्व छठ में केवल <strong className="text-amber-200 font-black">{timeLeft.days} दिन</strong> शेष हैं!</>
+            ) : (
+              <>आज छठ महापर्व का पावन दिन है! छठी मईया की कृपा आप पर बनी रहे।</>
+            )}
           </p>
         </div>
 
@@ -150,7 +217,7 @@ export const ChhathCountdownCard: React.FC<ChhathCountdownCardProps> = ({ onNavi
                 प्रथम दिवस: नहाय-खाय
               </p>
               <p className="text-xs font-bold text-white">
-                रविवार, 15 नवंबर 2026 (कार्तिक शुक्ल चतुर्थी)
+                {nextFestival.dateStr} ({nextFestival.thithiStr})
               </p>
             </div>
           </div>

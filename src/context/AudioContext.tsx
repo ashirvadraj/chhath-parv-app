@@ -117,20 +117,9 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const onError = (e: any) => {
-      console.warn('Audio tag playback error:', audio.src, e);
+      console.warn('Audio tag playback error for track:', audio.src, e);
       setIsLoading(false);
-      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
-
-      // Fast fallback to verified bundled offline audio if online stream fails
-      if (audio.src && (audio.src.startsWith('http://') || audio.src.startsWith('https://') || audio.src.includes('archive.org'))) {
-        console.log('Falling back immediately to bundled offline track: audio/kaanche_hi_bansh.mp3');
-        audio.src = 'audio/kaanche_hi_bansh.mp3';
-        audio.play()
-          .then(() => setIsPlaying(true))
-          .catch(() => setIsPlaying(false));
-      } else {
-        setIsPlaying(false);
-      }
+      setIsPlaying(false);
     };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
@@ -265,22 +254,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       audio.loop = (repeatMode === 'one');
       audio.currentTime = 0;
 
-      // Watchdog: If an online stream takes more than 3.5s to buffer, auto-fallback to instant bundled offline track
+      // Faithfully play the chosen song
       if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
-      if (srcUrl.startsWith('http://') || srcUrl.startsWith('https://')) {
-        loadTimeoutRef.current = setTimeout(() => {
-          if (audio && (audio.paused || audio.readyState < 2)) {
-            console.warn('Network stream latency exceeded 3.5s. Switching to instant offline track.');
-            audio.src = 'audio/kaanche_hi_bansh.mp3';
-            audio.play().then(() => {
-              setIsPlaying(true);
-              setIsLoading(false);
-            }).catch(() => {
-              setIsLoading(false);
-            });
-          }
-        }, 3500);
-      }
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
@@ -288,22 +263,10 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           .then(() => {
             setIsPlaying(true);
             setIsLoading(false);
-            if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
           })
           .catch((err) => {
-            console.warn('Audio tag play failed, trying fallback offline track:', err);
-            if (srcUrl !== 'audio/kaanche_hi_bansh.mp3') {
-              audio.src = 'audio/kaanche_hi_bansh.mp3';
-              audio.play()
-                .then(() => {
-                  setIsPlaying(true);
-                  setIsLoading(false);
-                })
-                .catch(() => {
-                  setIsPlaying(false);
-                  setIsLoading(false);
-                });
-            } else {
+            if (err.name !== 'AbortError') {
+              console.warn('Audio play error:', err);
               setIsPlaying(false);
               setIsLoading(false);
             }

@@ -206,10 +206,10 @@ public class MediaNotificationPlugin extends Plugin {
 
             NotificationChannel recChannel = new NotificationChannel(
                 RECOMMENDATION_CHANNEL_ID,
-                "दैनिक गीत सिफ़ारिशें (Song Recommendations)",
-                NotificationManager.IMPORTANCE_DEFAULT
+                "छठ महापर्व स्मरण व अनुष्ठान (Chhath Puja Reminders)",
+                NotificationManager.IMPORTANCE_HIGH
             );
-            recChannel.setDescription("Shows delightful nostalgic song recommendations and classical melodies");
+            recChannel.setDescription("छठ पूजा की पावन तिथियां, दिन शेष और घाट तैयारी के स्मरण");
             recChannel.setShowBadge(true);
             recChannel.enableVibration(true);
 
@@ -277,7 +277,9 @@ public class MediaNotificationPlugin extends Plugin {
             builder.setLargeIcon(bitmap);
         }
 
-        notificationManager.notify(NOTIFICATION_ID, builder.build());
+        try {
+            notificationManager.notify(NOTIFICATION_ID, builder.build());
+        } catch (Throwable ignored) {}
     }
 
     @PluginMethod
@@ -288,26 +290,32 @@ public class MediaNotificationPlugin extends Plugin {
         String coverUrl = call.getString("coverUrl", null);
         lastCoverUrl = coverUrl;
 
+        Context context = getContext();
         if (lastIsPlaying) {
             acquireLocks();
+            if (context != null) {
+                try {
+                    Intent serviceIntent = new Intent(context, MediaPlaybackService.class);
+                    serviceIntent.putExtra("title", lastTitle);
+                    serviceIntent.putExtra("artist", lastArtist);
+                    serviceIntent.putExtra("isPlaying", true);
+                    serviceIntent.putExtra("coverUrl", coverUrl);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        context.startForegroundService(serviceIntent);
+                    } else {
+                        context.startService(serviceIntent);
+                    }
+                } catch (Throwable ignored) {}
+            }
         } else {
             releaseLocks();
-        }
-
-        Context context = getContext();
-        if (context != null) {
-            try {
-                Intent serviceIntent = new Intent(context, MediaPlaybackService.class);
-                serviceIntent.putExtra("title", lastTitle);
-                serviceIntent.putExtra("artist", lastArtist);
-                serviceIntent.putExtra("isPlaying", lastIsPlaying);
-                serviceIntent.putExtra("coverUrl", coverUrl);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    context.startForegroundService(serviceIntent);
-                } else {
+            if (context != null) {
+                try {
+                    Intent serviceIntent = new Intent(context, MediaPlaybackService.class);
+                    serviceIntent.setAction("STOP");
                     context.startService(serviceIntent);
-                }
-            } catch (Exception ignored) {}
+                } catch (Throwable ignored) {}
+            }
         }
 
         buildAndShowNotification(lastTitle, lastArtist, lastIsPlaying, lastBitmap);

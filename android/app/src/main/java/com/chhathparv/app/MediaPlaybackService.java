@@ -109,11 +109,18 @@ public class MediaPlaybackService extends Service {
             boolean isPlaying = intent.getBooleanExtra("isPlaying", true);
             String coverUrl = intent.getStringExtra("coverUrl");
 
-            if (title != null) {
-                updateNotification(title, artist != null ? artist : "", isPlaying, coverUrl);
+            try {
+                updateNotification(
+                    title != null ? title : "छठ पर्व", 
+                    artist != null ? artist : "छठी मईया", 
+                    isPlaying, 
+                    coverUrl
+                );
+            } catch (Throwable t) {
+                // Catch any Android 14 ForegroundServiceStartNotAllowedException
             }
         }
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     private void createNotificationChannel() {
@@ -141,10 +148,19 @@ public class MediaPlaybackService extends Service {
 
         Notification notification = buildNotification(title, artist, isPlaying, lastBitmap);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-        } else {
-            startForeground(NOTIFICATION_ID, notification);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+            } else {
+                startForeground(NOTIFICATION_ID, notification);
+            }
+        } catch (Throwable t) {
+            // If background service start is restricted by Android 14, fallback to regular notification
+            try {
+                if (notificationManager != null) {
+                    notificationManager.notify(NOTIFICATION_ID, notification);
+                }
+            } catch (Throwable ignored) {}
         }
 
         if (coverUrl != null && !coverUrl.isEmpty()) {
@@ -253,8 +269,12 @@ public class MediaPlaybackService extends Service {
 
     public void stopForegroundService() {
         releaseLocks();
-        stopForeground(true);
-        stopSelf();
+        try {
+            stopForeground(true);
+        } catch (Throwable ignored) {}
+        try {
+            stopSelf();
+        } catch (Throwable ignored) {}
     }
 
     @Override
