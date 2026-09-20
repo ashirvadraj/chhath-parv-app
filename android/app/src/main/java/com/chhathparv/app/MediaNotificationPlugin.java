@@ -257,7 +257,7 @@ public class MediaNotificationPlugin extends Plugin {
         PendingIntent pContent = PendingIntent.getActivity(context, 100, contentIntent, flags);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_media_play)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(artist)
             .setContentIntent(pContent)
@@ -282,8 +282,8 @@ public class MediaNotificationPlugin extends Plugin {
 
     @PluginMethod
     public void updateNotification(PluginCall call) {
-        lastTitle = call.getString("title", "Sunehre Geet");
-        lastArtist = call.getString("artist", "Playing Classic Melody");
+        lastTitle = call.getString("title", "छठ पर्व");
+        lastArtist = call.getString("artist", "छठी मईया के पावन गीत");
         lastIsPlaying = Boolean.TRUE.equals(call.getBoolean("isPlaying", true));
         String coverUrl = call.getString("coverUrl", null);
         lastCoverUrl = coverUrl;
@@ -353,6 +353,51 @@ public class MediaNotificationPlugin extends Plugin {
             notificationManager.cancel(NOTIFICATION_ID);
         }
         call.resolve();
+    }
+
+    @PluginMethod
+    public void sendChhathReminder(PluginCall call) {
+        String title = call.getString("title", "छठ महापर्व 2026 (Chhath Puja)");
+        String message = call.getString("message", "छठ महापर्व की पावन तैयारियाँ शुरू करें!");
+
+        Context context = getContext();
+        if (context == null || notificationManager == null) {
+            call.reject("Context unavailable");
+            return;
+        }
+
+        try {
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                flags |= PendingIntent.FLAG_IMMUTABLE;
+            }
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 7001, intent, flags);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, RECOMMENDATION_CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
+
+            try {
+                Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+                if (bmp != null) builder.setLargeIcon(bmp);
+            } catch (Exception ignored) {}
+
+            notificationManager.notify(3003, builder.build());
+            JSObject ret = new JSObject();
+            ret.put("success", true);
+            call.resolve(ret);
+        } catch (Exception e) {
+            call.reject("Notification failed: " + e.getMessage());
+        }
     }
 
     @PluginMethod

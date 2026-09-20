@@ -206,7 +206,7 @@ public class MediaPlaybackService extends Service {
         PendingIntent pContent = PendingIntent.getActivity(this, 100, contentIntent, flags);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_media_play)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(artist)
             .setContentIntent(pContent)

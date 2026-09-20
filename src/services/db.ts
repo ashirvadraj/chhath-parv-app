@@ -1,4 +1,4 @@
-﻿import { 
+import { 
   UserSettings, 
   FestivalDay, 
   Song, 
@@ -290,7 +290,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठ महापर्व लोक धरोहर",
     "artwork": "/logo.svg",
     "duration": 320,
-    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Kaanche-Hi-Bansh-Ke-Bahangiya.mp3",
+    "audioUrl": "audio/kaanche_hi_bansh.mp3",
     "isFavorite": true,
     "sourceNote": "छठ महापर्व का सर्वाधिक लोकप्रिय व प्रसिद्ध पारंपरिक लोकगीत",
     "lyrics": "काँच ही बाँस के बहँगिया, बहँगी लचकत जाए...\nबहँगी लचकत जाए!\nबात जे पूछेला बटोहिया, बहँगी केकरा के जाए?\nबहँगी केकरा के जाए...\n\nतू त आन्हर हउवे रे बटोहिया, बहँगी सुरुज देव के जाए।\nबहँगी छठी मईया के जाए...\n\nकाँच ही बाँस के दउरवा, दउरा लचकत जाए।\nदउरा घाटे पहुँचे जाए..."
@@ -304,7 +304,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठी मईया के वरदान",
     "artwork": "/logo.svg",
     "duration": 295,
-    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Marbo-Re-Sugwa-Dhanush-Se.mp3",
+    "audioUrl": "audio/marbo_re_sugwa.mp3",
     "isFavorite": true,
     "sourceNote": "पवित्र फल अर्पण एवं सुगवा प्रसंग का अमर लोकगीत",
     "lyrics": "केरवा जे फरेला घवद से, ओह पर सुगा मँडराय...\nओह पर सुगा मँडराय!\nमारबो रे सुगवा धनुख से, सुगा गिरे मुरझाय...\n\nसुगनी जे रोवे ले वियोग से, आदित होई ना सहाय।\nअमरूद जे फरेला घवद से, ओह पर सुगा मँडराय..."
@@ -388,7 +388,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "आदित्य स्तुति",
     "artwork": "/logo.svg",
     "duration": 275,
-    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Char-Pahar-Ham-Jal-Sewela.mp3",
+    "audioUrl": "audio/ho_deenanath.mp3",
     "isFavorite": false,
     "sourceNote": "समस्त कष्टों के निवारण हेतु सूर्य भगवान की करुणामयी प्रार्थना",
     "lyrics": "हो दीनानाथ, सुन लीं अरज हमार...\nसुन लीं अरज हमार!\nदीन-दुखी के दाता तुहीं, जग के पालनहार...\n\nतेज तिहारो त्रिभुवन चमके, तुमहिं ज्ञान प्रकाश।\nहम बालक शरण तिहारी, पूरी करहु आस..."
@@ -1121,7 +1121,7 @@ class AppDatabase {
   // Songs
   getSongs(): Song[] {
     const cached = this.get<Song[]>(STORAGE_KEYS.SONGS, []);
-    if (!cached || cached.length < INITIAL_SONGS.length || cached.some(s => !s.audioUrl || s.audioUrl === '' || s.audioUrl.includes('.wav'))) {
+    if (!cached || cached.length < INITIAL_SONGS.length || cached.some(s => !s.audioUrl || s.audioUrl.includes('.wav')) || cached[0]?.audioUrl !== 'audio/kaanche_hi_bansh.mp3') {
       const imported = (cached || []).filter(s => s.isLocal);
       const combined = [...INITIAL_SONGS, ...imported];
       this.saveSongs(combined);

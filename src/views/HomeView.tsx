@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAudio } from '../context/AudioContext';
 import { db } from '../services/db';
@@ -20,6 +20,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { NavTab } from '../components/Navigation';
+import { ChhathCountdownCard } from '../components/ChhathCountdownCard';
 
 interface HomeViewProps {
   onNavigateTab: (tab: NavTab) => void;
@@ -71,56 +72,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigateTab, onSelectDay }
   return (
     <div className="space-y-6 pb-24">
 
-      {/* Hero Section: Divine Sun & Countdown */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-700 via-orange-600 to-red-700 text-white p-6 shadow-divine-lg">
-        <div className="absolute top-0 right-0 -mr-12 -mt-12 w-48 h-48 rounded-full bg-yellow-400/20 blur-2xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-40 h-40 rounded-full bg-red-900/30 blur-xl pointer-events-none" />
-
-        <div className="relative z-10">
-          <div className="flex items-center justify-between">
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-black/25 backdrop-blur-md text-amber-200 text-xs font-semibold border border-amber-300/30">
-              <Sun className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
-              <span>{t('festivalYear')}</span>
-            </div>
-            <span className="text-xs text-amber-100/90 font-medium">
-              कार्तिक शुक्ल षष्ठी
-            </span>
-          </div>
-
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-devanagari mt-3 tracking-tight text-white drop-shadow-sm">
-            {t('jaiChhathiMaiya')}
-          </h2>
-          <p className="text-xs sm:text-sm text-amber-100/90 mt-1 max-w-sm">
-            सूर्य उपासना और लोक आस्था का परम पावन चार दिवसीय महापर्व
-          </p>
-
-          {/* Countdown timer grid */}
-          <div className="mt-5 pt-4 border-t border-white/20">
-            <p className="text-[11px] uppercase tracking-wider text-amber-200 font-semibold mb-2 flex items-center">
-              <Clock className="w-3.5 h-3.5 mr-1" />
-              {t('countdownTitle')}
-            </p>
-            <div className="grid grid-cols-4 gap-2 text-center">
-              {[
-                { val: timeLeft.days, label: t('days') },
-                { val: timeLeft.hours, label: t('hours') },
-                { val: timeLeft.minutes, label: t('minutes') },
-                { val: timeLeft.seconds, label: t('seconds') },
-              ].map((item, idx) => (
-                <div key={idx} className="bg-black/30 backdrop-blur-md rounded-2xl py-2 px-1 border border-white/10">
-                  <span className="block text-xl sm:text-2xl font-black font-mono tracking-tight text-amber-200">
-                    {item.val < 10 ? `0${item.val}` : item.val}
-                  </span>
-                  <span className="text-[10px] uppercase tracking-wider text-amber-100/80 font-medium">
-                    {item.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      </div>
+      {/* Chhath Puja Countdown & Notification Card */}
+      <ChhathCountdownCard onNavigateTab={onNavigateTab} />
 
       {/* Continue Preparation Card with Progress */}
       <div 

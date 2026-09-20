@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Song } from '../types';
 import { db } from '../services/db';
+import { NativeMediaService } from '../services/nativeMedia';
 
 interface AudioContextType {
   currentSong: Song | null;
@@ -58,13 +59,19 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [sleepTimer, setSleepTimer] = useState<number | null>(null);
 
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const preloaderAudioRef = useRef<HTMLAudioElement | null>(null);
+  const loadTimeoutRef = useRef<any>(null);
   const sleepTimerIntervalRef = useRef<any>(null);
 
-  // Initialize Audio Element
+  // Initialize Audio Element and Background Listeners
   useEffect(() => {
     const audio = new Audio();
     audio.preload = 'auto';
     audioElementRef.current = audio;
+
+    const preloader = new Audio();
+    preloader.preload = 'metadata';
+    preloaderAudioRef.current = preloader;
 
     const onTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
@@ -75,6 +82,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const onLoadedMetadata = () => {
       setIsLoading(false);
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
       if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration) && audio.duration > 0) {
         setDuration(audio.duration);
       }
@@ -82,6 +90,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const onCanPlay = () => {
       setIsLoading(false);
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
     };
 
     const onWaiting = () => {
@@ -91,6 +100,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const onPlaying = () => {
       setIsLoading(false);
       setIsPlaying(true);
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
     };
 
     const onPause = () => {
@@ -109,9 +119,11 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const onError = (e: any) => {
       console.warn('Audio tag playback error:', audio.src, e);
       setIsLoading(false);
-      // If an online stream failed, fall back to bundled authentic offline track
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
+
+      // Fast fallback to verified bundled offline audio if online stream fails
       if (audio.src && (audio.src.startsWith('http://') || audio.src.startsWith('https://') || audio.src.includes('archive.org'))) {
-        console.log('Online stream unavailable, falling back to bundled offline track: audio/kaanche_hi_bansh.mp3');
+        console.log('Falling back immediately to bundled offline track: audio/kaanche_hi_bansh.mp3');
         audio.src = 'audio/kaanche_hi_bansh.mp3';
         audio.play()
           .then(() => setIsPlaying(true))
@@ -131,6 +143,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     audio.addEventListener('error', onError);
 
     return () => {
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
       audio.removeEventListener('timeupdate', onTimeUpdate);
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
       audio.removeEventListener('canplay', onCanPlay);
@@ -143,6 +156,49 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [repeatMode]);
 
+  // Sync with Native Media Notification Card & Android Foreground Service
+  useEffect(() => {
+    NativeMediaService.updateMediaNotification(currentSong, isPlaying);
+  }, [currentSong, isPlaying]);
+
+  // Setup Native Media Controls (Notification Drawer & Headset buttons)
+  useEffect(() => {
+    const cleanup = NativeMediaService.setupMediaActionListeners({
+      onPlay: () => {
+        const audio = audioElementRef.current;
+        if (audio) {
+          audio.play().then(() => setIsPlaying(true)).catch(() => {});
+        }
+      },
+      onPause: () => {
+        const audio = audioElementRef.current;
+        if (audio) {
+          audio.pause();
+          setIsPlaying(false);
+        }
+      },
+      onNext: () => playNext(),
+      onPrev: () => playPrevious(),
+    });
+
+    return () => {
+      cleanup();
+      NativeMediaService.hideMediaNotification();
+    };
+  }, [currentSong, queue, isShuffle]);
+
+  // Smart background pre-buffering of the next track in queue
+  useEffect(() => {
+    if (currentSong && queue.length > 1 && preloaderAudioRef.current) {
+      const currentIndex = queue.findIndex((s) => s.id === currentSong.id);
+      const nextIndex = (currentIndex + 1) % queue.length;
+      const nextSong = queue[nextIndex];
+      if (nextSong && nextSong.audioUrl) {
+        preloaderAudioRef.current.src = resolveAudioUrl(nextSong.audioUrl);
+      }
+    }
+  }, [currentSong, queue]);
+
   // MediaSession API setup for Android lockscreen, notification controls, and bluetooth
   useEffect(() => {
     if ('mediaSession' in navigator && currentSong) {
@@ -151,7 +207,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         artist: currentSong.artist,
         album: currentSong.album || 'छठ महापर्व • Chhath Parv',
         artwork: [
-          { src: currentSong.artwork || '/logo.svg', sizes: '512x512', type: 'image/svg+xml' }
+          { src: currentSong.artwork || '/icon-512.png', sizes: '512x512', type: 'image/png' }
         ]
       });
 
@@ -209,12 +265,30 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       audio.loop = (repeatMode === 'one');
       audio.currentTime = 0;
 
+      // Watchdog: If an online stream takes more than 3.5s to buffer, auto-fallback to instant bundled offline track
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
+      if (srcUrl.startsWith('http://') || srcUrl.startsWith('https://')) {
+        loadTimeoutRef.current = setTimeout(() => {
+          if (audio && (audio.paused || audio.readyState < 2)) {
+            console.warn('Network stream latency exceeded 3.5s. Switching to instant offline track.');
+            audio.src = 'audio/kaanche_hi_bansh.mp3';
+            audio.play().then(() => {
+              setIsPlaying(true);
+              setIsLoading(false);
+            }).catch(() => {
+              setIsLoading(false);
+            });
+          }
+        }, 3500);
+      }
+
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
             setIsPlaying(true);
             setIsLoading(false);
+            if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
           })
           .catch((err) => {
             console.warn('Audio tag play failed, trying fallback offline track:', err);
@@ -269,6 +343,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (audioElementRef.current) {
       audioElementRef.current.pause();
     }
+    if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
     setIsPlaying(false);
     setIsLoading(false);
   };
