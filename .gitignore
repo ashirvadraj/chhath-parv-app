@@ -19,5 +19,5 @@ android/local.properties
 .DS_Store
 Thumbs.db
 
-# Android APKs
-*.apk
+# Android APKs tracked via Git LFS
+# *.apk
