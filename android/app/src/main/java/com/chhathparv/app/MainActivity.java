@@ -21,33 +21,16 @@ public class MainActivity extends BridgeActivity {
         
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // Request all runtime permissions ONCE on launch (notifications, microphone for voice search, storage)
-        android.content.SharedPreferences permsPrefs = getSharedPreferences("sunehre_permissions_pref", Context.MODE_PRIVATE);
-        boolean alreadyRequested = permsPrefs.getBoolean("has_requested_all_permissions_once", false);
+        // Request notification permission on launch for Puja reminders (Android 13+)
+        android.content.SharedPreferences permsPrefs = getSharedPreferences("chhath_permissions_pref", Context.MODE_PRIVATE);
+        boolean alreadyRequested = permsPrefs.getBoolean("has_requested_notifications", false);
         if (!alreadyRequested) {
-            java.util.List<String> permissionsToRequest = new java.util.ArrayList<>();
-            
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    permissionsToRequest.add(android.Manifest.permission.POST_NOTIFICATIONS);
-                }
-                if (checkSelfPermission(android.Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    permissionsToRequest.add(android.Manifest.permission.READ_MEDIA_AUDIO);
-                }
-            } else {
-                if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    permissionsToRequest.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+                    requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
                 }
             }
-
-            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                permissionsToRequest.add(android.Manifest.permission.RECORD_AUDIO);
-            }
-
-            if (!permissionsToRequest.isEmpty()) {
-                requestPermissions(permissionsToRequest.toArray(new String[0]), 101);
-            }
-            permsPrefs.edit().putBoolean("has_requested_all_permissions_once", true).apply();
+            permsPrefs.edit().putBoolean("has_requested_notifications", true).apply();
         }
 
         if (getBridge() != null && getBridge().getWebView() != null) {

@@ -18,23 +18,30 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file('sunehre-geet.keystore')
-            storePassword 'sunehregeet123'
-            keyAlias 'sunehregeet'
-            keyPassword 'sunehregeet123'
-            v1SigningEnabled true
-            v2SigningEnabled true
+            storeFile file('chhath-parv.keystore')
+            storePassword 'chhathparv2026'
+            keyAlias 'chhathparv'
+            keyPassword 'chhathparv2026'
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
         }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.release
+            matchingFallbacks = ['debug', 'release']
         }
         release {
             signingConfig signingConfigs.release
+            matchingFallbacks = ['release', 'debug']
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 

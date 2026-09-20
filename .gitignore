@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
@@ -19,5 +19,5 @@ android/local.properties
 .DS_Store
 Thumbs.db
 
-# Android APKs (Uploaded via GitHub Releases)
+# Android APKs
 *.apk

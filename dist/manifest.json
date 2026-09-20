@@ -1,0 +1,23 @@
+{
+  "name": "छठ पर्व - Chhath Parv",
+  "short_name": "छठ पर्व",
+  "description": "सम्पूर्ण छठ पूजा मार्गदर्शिका, गीत, आरतियाँ, मंत्र एवं अनुष्ठान",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#7c2d12",
+  "theme_color": "#ea580c",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

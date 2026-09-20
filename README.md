@@ -1,4 +1,4 @@
-﻿# छठ पर्व • Chhath Parv Android App
+# छठ पर्व • Chhath Parv Android App
 
 <p align="center">
   <img src="public/logo.svg" width="140" alt="Chhath Parv Logo" />
@@ -9,11 +9,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ashirvadraj/chhath-parv-app/releases/download/v1.0.0/ChhathParv.apk">
+  <a href="https://github.com/ashirvadraj/chhath-parv-app/raw/main/ChhathParv.apk">
     <img src="https://img.shields.io/badge/Download-ChhathParv.apk-orange?style=for-the-badge&logo=android" alt="Download APK" />
   </a>
-  <a href="https://github.com/ashirvadraj/chhath-parv-app/releases/tag/v1.0.0">
-    <img src="https://img.shields.io/badge/Release-v1.0.0-green?style=for-the-badge&logo=github" alt="Release v1.0.0" />
+  <a href="https://github.com/ashirvadraj/chhath-parv-app/releases/tag/v1.0.1">
+    <img src="https://img.shields.io/badge/Release-v1.0.1-green?style=for-the-badge&logo=github" alt="Release v1.0.1" />
   </a>
 </p>
 
@@ -25,8 +25,9 @@
 ---
 
 ## 📲 Direct APK Download
-You can download and install the compiled Android APK directly:
-👉 [**Download ChhathParv.apk (v1.0.0)**](https://github.com/ashirvadraj/chhath-parv-app/releases/download/v1.0.0/ChhathParv.apk)
+You can download and install the compiled Android APK directly onto your phone:
+👉 [**Download ChhathParv.apk (Direct from Repo)**](https://github.com/ashirvadraj/chhath-parv-app/raw/main/ChhathParv.apk)
+👉 [**Download from GitHub Release (v1.0.1)**](https://github.com/ashirvadraj/chhath-parv-app/releases/download/v1.0.1/ChhathParv.apk)
 
 ---
 
