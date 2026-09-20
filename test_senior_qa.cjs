@@ -46,15 +46,15 @@ const lyricsContent = fs.readFileSync('src/services/fullSongLyrics.ts', 'utf8');
 const dbContent = fs.readFileSync('src/services/db.ts', 'utf8');
 
 // Check cache version key
-assert(dbContent.includes("const SONGS_VERSION_KEY = 'chhath_parv_songs_ver_1_4_0';"), 'Cache key bumped to v1.4.0 in db.ts');
-assert(dbContent.includes("1.4.0_verified_lyrics_and_singers"), 'Cache refresh token updated in db.ts');
+assert(dbContent.includes("const SONGS_VERSION_KEY = 'chhath_parv_songs_ver_1_4_2';"), 'Cache key bumped to v1.4.2 in db.ts');
+assert(dbContent.includes("1.4.2_exact_synced_lyrics"), 'Cache refresh token updated in db.ts');
 
 // Check Sonu Nigam song
 assert(dbContent.includes('"id": "song-52"'), 'Song-52 exists in db.ts');
 assert(dbContent.includes('"title": "जय छठी मईया (चला भाऊजी हाली हाली)"'), 'Sonu Nigam song title is exact');
 assert(dbContent.includes('"audioUrl": "audio/sonu_jai_chhathi_maiya.mp3"'), 'Sonu Nigam song maps to local verified audio');
-assert(lyricsContent.includes('सबे वरत कर त ऐ धनी तुहूं कर'), 'Sonu Nigam lyrics contain verified opening verse');
-assert(lyricsContent.includes('की चला भाऊजी हाली हाली सुरुज देखहिहें लाली'), 'Sonu Nigam lyrics contain verified chorus');
+assert(lyricsContent.includes('[00:40.64] सबे वरत करत, ऐ धनी तू कर'), 'Sonu Nigam lyrics contain exact millisecond timestamped opening verse');
+assert(lyricsContent.includes('[01:08.64] की चला भाऊजी हाली हाली'), 'Sonu Nigam lyrics contain exact millisecond timestamped Sonu verse');
 
 // Check Palak Muchhal song
 assert(dbContent.includes('"id": "song-53"'), 'Song-53 exists in db.ts');
@@ -162,14 +162,21 @@ assert(moreViewContent.includes('16 नवंबर (सोमवार) • भ
 assert(!moreViewContent.includes('17 नवंबर • अपराह्न 03:00'), 'Outdated 17 Nov date removed from MoreView');
 assert(!moreViewContent.includes('18 नवंबर • भोर 03:30'), 'Outdated 18 Nov date removed from MoreView');
 
-// 7. AUDIT APP VERSION NUMBERS
-console.log('\n--- TEST GROUP 7: RELEASE VERSIONING AUDIT ---');
+// 7. AUDIT APP VERSION NUMBERS & LYRICS ENGINE
+console.log('\n--- TEST GROUP 7: RELEASE VERSIONING & LYRICS ENGINE AUDIT ---');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-assert(pkg.version === '1.4.1', `package.json version is 1.4.1 (found ${pkg.version})`);
+assert(pkg.version === '1.4.2', `package.json version is 1.4.2 (found ${pkg.version})`);
 
 const gradleContent = fs.readFileSync('android/app/build.gradle', 'utf8');
-assert(gradleContent.includes('versionCode 6'), 'build.gradle versionCode is 6');
-assert(gradleContent.includes('versionName "1.4.1"'), 'build.gradle versionName is 1.4.1');
+assert(gradleContent.includes('versionCode 7'), 'build.gradle versionCode is 7');
+assert(gradleContent.includes('versionName "1.4.2"'), 'build.gradle versionName is 1.4.2');
+
+const lyricsEngineContent = fs.readFileSync('src/utils/lyricsEngine.ts', 'utf8');
+assert(lyricsEngineContent.includes('timestampRegex = /^') && lyricsEngineContent.includes('parseLyricsToTimeline'), 'LyricsEngine has LRC timestamp parser');
+assert(lyricsEngineContent.includes('estSingingWindow'), 'LyricsEngine prevents stretching across instrumental breaks');
+
+const playerModalContent = fs.readFileSync('src/components/FullPlayerModal.tsx', 'utf8');
+assert(playerModalContent.includes('replace(/\\[\\d{1,2}:\\d{2}(?:\\.\\d+)?\\]\\s*/g'), 'FullPlayerModal strips timestamps on copy and full view');
 
 console.log('\n================================================================');
 console.log(`  QA AUDIT COMPLETE: ${passedTests}/${totalTests} TESTS PASSED`);

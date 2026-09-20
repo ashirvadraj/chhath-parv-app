@@ -131,9 +131,10 @@ export const FullPlayerModal: React.FC = () => {
 
   const handleCopyLyrics = async () => {
     if (!currentSong?.lyrics) return;
+    const cleanLyrics = currentSong.lyrics.replace(/\[\d{1,2}:\d{2}(?:\.\d+)?\]\s*/g, '');
     try {
       await navigator.clipboard.writeText(
-        `"${currentSong.title}" - ${currentSong.artist}\n\n${currentSong.lyrics}\n\n(छठ महापर्व ऐप)`
+        `"${currentSong.title}" - ${currentSong.artist}\n\n${cleanLyrics}\n\n(छठ महापर्व ऐप)`
       );
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -333,55 +334,65 @@ export const FullPlayerModal: React.FC = () => {
                       <div className="w-8 h-0.5 bg-amber-500/30 mb-3 rounded-full mx-auto" />
                     )}
 
-                    <p
-                      className={`leading-relaxed text-base sm:text-xl font-devanagari transition-all ${
-                        isActive
-                          ? 'font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]'
-                          : 'font-normal text-stone-300'
-                      }`}
-                    >
-                      {line.words.map((word, wIdx) => {
-                        if (!isActive) {
-                          return <span key={wIdx}>{word.text} </span>;
-                        }
+                    {line.text.startsWith('[') && line.text.endsWith(']') ? (
+                      <p className={`text-center italic text-xs sm:text-sm py-1.5 font-devanagari transition-all ${
+                        isActive 
+                          ? 'text-amber-300 font-bold drop-shadow-[0_0_8px_rgba(245,158,11,0.6)] scale-105' 
+                          : 'text-amber-400/40'
+                      }`}>
+                        ♪ {line.text.slice(1, -1)} ♪
+                      </p>
+                    ) : (
+                      <p
+                        className={`leading-relaxed text-base sm:text-xl font-devanagari transition-all ${
+                          isActive
+                            ? 'font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]'
+                            : 'font-normal text-stone-300'
+                        }`}
+                      >
+                        {line.words.map((word, wIdx) => {
+                          if (!isActive) {
+                            return <span key={wIdx}>{word.text} </span>;
+                          }
 
-                        const wordState = getWordPlaybackState(word, currentTime);
+                          const wordState = getWordPlaybackState(word, currentTime);
 
-                        if (wordState === 'singing') {
-                          // The exact singing word is emboldened, highlighted & glowing
+                          if (wordState === 'singing') {
+                            // The exact singing word is emboldened, highlighted & glowing
+                            return (
+                              <span
+                                key={wIdx}
+                                className="inline-block font-black text-amber-300 scale-105 px-1 py-0.5 mx-0.5 rounded bg-amber-500/25 drop-shadow-[0_0_12px_rgba(251,191,36,0.95)] transition-all duration-100 ease-out"
+                              >
+                                {word.text}{' '}
+                              </span>
+                            );
+                          }
+
+                          if (wordState === 'sung') {
+                            // Words already sung in this line stay bright bold
+                            return (
+                              <span
+                                key={wIdx}
+                                className="font-bold text-amber-100 transition-colors duration-200"
+                              >
+                                {word.text}{' '}
+                              </span>
+                            );
+                          }
+
+                          // Words yet to be sung in the current line
                           return (
                             <span
                               key={wIdx}
-                              className="inline-block font-black text-amber-300 scale-105 px-1 py-0.5 mx-0.5 rounded bg-amber-500/25 drop-shadow-[0_0_12px_rgba(251,191,36,0.95)] transition-all duration-100 ease-out"
+                              className="font-normal text-white/50 transition-colors duration-200"
                             >
                               {word.text}{' '}
                             </span>
                           );
-                        }
-
-                        if (wordState === 'sung') {
-                          // Words already sung in this line stay bright bold
-                          return (
-                            <span
-                              key={wIdx}
-                              className="font-bold text-amber-100 transition-colors duration-200"
-                            >
-                              {word.text}{' '}
-                            </span>
-                          );
-                        }
-
-                        // Words yet to be sung in the current line
-                        return (
-                          <span
-                            key={wIdx}
-                            className="font-normal text-white/50 transition-colors duration-200"
-                          >
-                            {word.text}{' '}
-                          </span>
-                        );
-                      })}
-                    </p>
+                        })}
+                      </p>
+                    )}
                   </div>
                 );
               })}
@@ -443,7 +454,7 @@ export const FullPlayerModal: React.FC = () => {
                 <p className="text-xs text-amber-400/80 mt-0.5">{currentSong.artist} • {currentSong.category}</p>
               </div>
               <div className="whitespace-pre-line text-stone-100 leading-loose">
-                {currentSong.lyrics}
+                {currentSong.lyrics?.replace(/\[\d{1,2}:\d{2}(?:\.\d+)?\]\s*/g, '')}
               </div>
               <div className="text-[11px] text-stone-400 pt-4 border-t border-white/10 italic">
                 * {currentSong.sourceNote || 'पारंपरिक लोक आस्था के बोल। क्षेत्रीय उच्चारण अनुसार शब्दों में सौम्य अंतर हो सकता है।'}

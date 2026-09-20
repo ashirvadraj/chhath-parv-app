@@ -1133,9 +1133,10 @@ class AppDatabase {
 
   // Songs
   getSongs(): Song[] {
-    const SONGS_VERSION_KEY = 'chhath_parv_songs_ver_1_4_0';
-    const hasLatestLyrics = this.get<string>(SONGS_VERSION_KEY, '') === '1.4.0_verified_lyrics_and_singers';
+    const SONGS_VERSION_KEY = 'chhath_parv_songs_ver_1_4_2';
+    const hasLatestLyrics = this.get<string>(SONGS_VERSION_KEY, '') === '1.4.2_exact_synced_lyrics';
     const cached = this.get<Song[]>(STORAGE_KEYS.SONGS, []);
+    const sonuSong = cached?.find(s => s.id === 'song-52');
     const needsRefresh = !hasLatestLyrics ||
       !cached || 
       cached.length < INITIAL_SONGS.length || 
@@ -1143,13 +1144,14 @@ class AppDatabase {
       cached[0]?.audioUrl !== 'audio/kaanche_hi_bansh.mp3' ||
       cached[32]?.audioUrl !== INITIAL_SONGS[32]?.audioUrl ||
       !cached[0]?.lyrics ||
-      cached[0].lyrics.length < 350;
+      cached[0].lyrics.length < 350 ||
+      !sonuSong?.lyrics?.includes('[00:40.64]');
 
     if (needsRefresh) {
       const imported = (cached || []).filter(s => s.isLocal);
       const combined = [...INITIAL_SONGS, ...imported];
       this.saveSongs(combined);
-      this.set(SONGS_VERSION_KEY, '1.4.0_verified_lyrics_and_singers');
+      this.set(SONGS_VERSION_KEY, '1.4.2_exact_synced_lyrics');
       return combined;
     }
     return cached;

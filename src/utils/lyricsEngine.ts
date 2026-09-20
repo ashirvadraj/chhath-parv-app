@@ -25,6 +25,7 @@ export interface LyricsTimeline {
 
 /**
  * Parses song lyrics into a synchronized timeline of lines and word intervals.
+ * Supports exact LRC timestamps [mm:ss.xx] as well as proportional distribution.
  */
 export function parseLyricsToTimeline(
   songId: string,
@@ -36,8 +37,92 @@ export function parseLyricsToTimeline(
   }
 
   const rawLines = lyrics.split('\n');
-  const validLines: { text: string; isVerseBreak: boolean }[] = [];
+  const duration = Math.max(45, totalDuration || 280);
+  const timestampRegex = /^\[(\d{1,2}):(\d{2}(?:\.\d+)?)\]\s*(.*)$/;
+  const hasTimestamps = rawLines.some(l => timestampRegex.test(l.trim()));
 
+  // 1. EXACT TIMESTAMP PARSING (LRC Mode)
+  if (hasTimestamps) {
+    const parsedCues: { startTime: number; text: string; isVerseBreak: boolean }[] = [];
+    let lastWasEmpty = false;
+
+    for (let i = 0; i < rawLines.length; i++) {
+      const trimmed = rawLines[i].trim();
+      if (!trimmed) {
+        lastWasEmpty = true;
+        continue;
+      }
+
+      const m = trimmed.match(timestampRegex);
+      if (m) {
+        const mins = parseInt(m[1], 10);
+        const secs = parseFloat(m[2]);
+        const startTime = mins * 60 + secs;
+        const text = m[3].trim();
+        if (text) {
+          parsedCues.push({ startTime, text, isVerseBreak: lastWasEmpty });
+          lastWasEmpty = false;
+        }
+      }
+    }
+
+    if (parsedCues.length > 0) {
+      const lines: SyncedLine[] = [];
+
+      for (let i = 0; i < parsedCues.length; i++) {
+        const cue = parsedCues[i];
+        const nextStartTime = i < parsedCues.length - 1 ? parsedCues[i + 1].startTime : duration;
+        const rawLineDur = Math.max(1.0, nextStartTime - cue.startTime);
+
+        // Word parsing & timing within the line
+        const wordsRaw = cue.text.split(/\s+/).filter(Boolean);
+        // Active singing window inside the line (avoids stretching words across long instrumental pauses)
+        const estSingingWindow = Math.max(2.0, wordsRaw.length * 0.48);
+        const activeSingingEnd = rawLineDur > 8 && rawLineDur > estSingingWindow * 1.8
+          ? cue.startTime + Math.min(rawLineDur - 1.0, Math.max(estSingingWindow, 5.0))
+          : nextStartTime;
+
+        const wordWeights = wordsRaw.map(w => Math.max(1, w.replace(/[,!?;:…\-–—।॥]/g, '').length));
+        const totalWordWeight = wordWeights.reduce((acc, c) => acc + c, 0) || 1;
+
+        let wordStart = cue.startTime;
+        const words: SyncedWord[] = [];
+
+        for (let w = 0; w < wordsRaw.length; w++) {
+          const fraction = wordWeights[w] / totalWordWeight;
+          const wDuration = (activeSingingEnd - cue.startTime) * fraction;
+          const wEnd = w === wordsRaw.length - 1 ? activeSingingEnd : wordStart + wDuration;
+
+          words.push({
+            text: wordsRaw[w],
+            startTime: wordStart,
+            endTime: wEnd
+          });
+
+          wordStart = wEnd;
+        }
+
+        lines.push({
+          id: `${songId}-lrc-${i}`,
+          lineIndex: i,
+          text: cue.text,
+          startTime: cue.startTime,
+          endTime: nextStartTime, // line stays in view until next line starts
+          words,
+          isVerseBreak: cue.isVerseBreak || (i > 0 && cue.startTime - parsedCues[i - 1].startTime > 7)
+        });
+      }
+
+      return {
+        songId,
+        lines,
+        totalDuration: duration
+      };
+    }
+  }
+
+  // 2. PROPORTIONAL FALLBACK (Non-LRC Mode)
+  const validLines: { text: string; isVerseBreak: boolean }[] = [];
   let lastWasEmpty = false;
   for (let i = 0; i < rawLines.length; i++) {
     const trimmed = rawLines[i].trim();
@@ -54,14 +139,13 @@ export function parseLyricsToTimeline(
   }
 
   // Duration allocation (intro & outro padding for realistic folk song cadence)
-  const duration = Math.max(45, totalDuration || 280);
   const introTime = Math.min(12, Math.max(5, duration * 0.04));
   const outroTime = Math.min(16, Math.max(8, duration * 0.05));
   const singingTime = Math.max(20, duration - introTime - outroTime);
 
   // Compute proportional weights for lines based on character density and stanza pauses
   const weights = validLines.map(line => {
-    const cleanChars = line.text.replace(/[\s.,!?;:…\-–—]/g, '').length;
+    const cleanChars = line.text.replace(/[\s.,!?;:…\-–—।॥]/g, '').length;
     return Math.max(4, cleanChars) + (line.isVerseBreak ? 4 : 0);
   });
   const totalWeight = weights.reduce((acc, w) => acc + w, 0);
@@ -77,8 +161,8 @@ export function parseLyricsToTimeline(
 
     // Word parsing & timing within the line
     const wordsRaw = lineObj.text.split(/\s+/).filter(Boolean);
-    const wordWeights = wordsRaw.map(w => Math.max(1, w.replace(/[,!?;:…\-–—]/g, '').length));
-    const totalWordWeight = wordWeights.reduce((acc, c) => acc + c, 0);
+    const wordWeights = wordsRaw.map(w => Math.max(1, w.replace(/[,!?;:…\-–—।॥]/g, '').length));
+    const totalWordWeight = wordWeights.reduce((acc, c) => acc + c, 0) || 1;
 
     let wordStart = currentStart;
     const words: SyncedWord[] = [];
