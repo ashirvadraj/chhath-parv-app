@@ -13,7 +13,7 @@
     <img src="https://img.shields.io/badge/Download-ChhathParv.apk-orange?style=for-the-badge&logo=android" alt="Download APK" />
   </a>
   <a href="https://github.com/ashirvadraj/chhath-parv-app/releases/latest">
-    <img src="https://img.shields.io/badge/Release-v1.4.1-green?style=for-the-badge&logo=github" alt="Release v1.4.1" />
+    <img src="https://img.shields.io/badge/Release-v1.4.2-green?style=for-the-badge&logo=github" alt="Release v1.4.2" />
   </a>
 </p>
 
@@ -26,8 +26,8 @@
 
 ## 📲 Direct APK Download & Installation Guide
 
-### 📥 1. Download Latest APK (v1.4.1)
-👉 [**Download ChhathParv.apk (Direct Download ~53 MB)**](https://github.com/ashirvadraj/chhath-parv-app/releases/latest/download/ChhathParv.apk)  
+### 📥 1. Download Latest APK (v1.4.2)
+👉 [**Download ChhathParv.apk (Direct Download ~53.8 MB)**](https://github.com/ashirvadraj/chhath-parv-app/releases/latest/download/ChhathParv.apk)  
 👉 [**View Release Assets & Changelog on GitHub Releases**](https://github.com/ashirvadraj/chhath-parv-app/releases/latest)
 
 > ⚠️ **IMPORTANT**: Do NOT download from `raw.githubusercontent.com` or repository file view directly, as Git LFS serves a small pointer text file instead of the actual APK. Always use the GitHub Releases link above.
