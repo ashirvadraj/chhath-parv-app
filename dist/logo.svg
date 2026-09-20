@@ -1,0 +1,76 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#991B1B" />
+      <stop offset="40%" stop-color="#EA580C" />
+      <stop offset="70%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#FEF08A" />
+    </linearGradient>
+    <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFBEB" />
+      <stop offset="30%" stop-color="#FDE047" />
+      <stop offset="70%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#EA580C" />
+    </linearGradient>
+    <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F97316" stop-opacity="0.8" />
+      <stop offset="30%" stop-color="#C2410C" />
+      <stop offset="100%" stop-color="#7C2D12" />
+    </linearGradient>
+    <linearGradient id="diyaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D97706" />
+      <stop offset="100%" stop-color="#78350F" />
+    </linearGradient>
+    <radialGradient id="flameGrad" cx="50%" cy="80%" r="60%">
+      <stop offset="0%" stop-color="#FEF08A" />
+      <stop offset="40%" stop-color="#F59E0B" />
+      <stop offset="80%" stop-color="#EF4444" />
+      <stop offset="100%" stop-color="#B91C1C" stop-opacity="0" />
+    </radialGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background circular badge -->
+  <circle cx="256" cy="256" r="248" fill="url(#skyGrad)" stroke="#FEF08A" stroke-width="8"/>
+
+  <!-- Divine Sun Rays -->
+  <g stroke="#FEF08A" stroke-width="4" stroke-linecap="round" opacity="0.75">
+    <line x1="256" y1="50" x2="256" y2="85" />
+    <line x1="375" y1="85" x2="350" y2="110" />
+    <line x1="430" y1="180" x2="395" y2="195" />
+    <line x1="137" y1="85" x2="162" y2="110" />
+    <line x1="82" y1="180" x2="117" y2="195" />
+    <line x1="310" y1="60" x2="295" y2="92" />
+    <line x1="202" y1="60" x2="217" y2="92" />
+  </g>
+
+  <!-- Rising Sun (Surya Bhagwan) -->
+  <circle cx="256" cy="220" r="100" fill="url(#sunGrad)" filter="url(#glow)"/>
+
+  <!-- Holy River Sacred Waves -->
+  <path d="M 12 340 Q 75 320 135 340 T 256 340 T 377 340 T 500 340 L 500 500 Q 400 512 256 512 Q 112 512 12 500 Z" fill="url(#waterGrad)"/>
+  <path d="M 20 375 Q 85 360 145 375 T 256 375 T 385 375 T 495 375 L 495 500 Q 400 512 256 512 Q 112 512 20 500 Z" fill="#7C2D12" opacity="0.6"/>
+
+  <!-- Traditional Puja Daura / Soop Silhouette / Kalash and Offerings -->
+  <g id="offerings" transform="translate(0, 10)">
+    <!-- Soop base -->
+    <path d="M 140 370 C 140 430 372 430 372 370 C 372 345 340 335 256 335 C 172 335 140 345 140 370 Z" fill="#92400E" stroke="#FDE68A" stroke-width="4"/>
+    <path d="M 155 375 C 180 405 332 405 357 375 C 330 355 182 355 155 375 Z" fill="#78350F"/>
+
+    <!-- Kalash / Lotah -->
+    <ellipse cx="256" cy="355" rx="36" ry="14" fill="#F59E0B" stroke="#FEF08A" stroke-width="2"/>
+    <path d="M 224 355 C 220 395 292 395 288 355 Z" fill="#D97706" stroke="#FEF08A" stroke-width="2"/>
+
+    <!-- Sugarcane stalks arched in reverence -->
+    <path d="M 130 420 Q 200 210 256 160 Q 312 210 382 420" fill="none" stroke="#65A30D" stroke-width="7" stroke-linecap="round"/>
+    <path d="M 150 420 Q 210 230 256 190 Q 302 230 362 420" fill="none" stroke="#4D7C0F" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- Divine Diya -->
+    <path d="M 235 340 Q 256 355 277 340 Q 256 332 235 340 Z" fill="url(#diyaGrad)"/>
+    <ellipse cx="256" cy="315" rx="14" ry="24" fill="url(#flameGrad)" filter="url(#glow)"/>
+    <ellipse cx="256" cy="320" rx="6" ry="12" fill="#FFFFFF"/>
+  </g>
+</svg>

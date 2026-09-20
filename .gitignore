@@ -1,0 +1,23 @@
+﻿# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build directories & caches
+.gradle/
+build/
+android/.gradle/
+android/app/build/
+android/capacitor-cordova-android-plugins/build/
+android/local.properties
+.idea/
+.vscode/
+*.log
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Android APKs (Uploaded via GitHub Releases)
+*.apk

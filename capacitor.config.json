@@ -1,0 +1,8 @@
+{
+  "appId": "com.chhathparv.app",
+  "appName": "छठ पर्व",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": true
+  }
+}

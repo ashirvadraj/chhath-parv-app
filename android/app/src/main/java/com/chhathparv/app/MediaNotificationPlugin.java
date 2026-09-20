@@ -1,0 +1,1005 @@
+package com.chhathparv.app;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.os.Environment;
+import android.os.PowerManager;
+import android.provider.MediaStore;
+import java.io.OutputStream;
+import android.speech.RecognizerIntent;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+
+import androidx.activity.result.ActivityResult;
+import androidx.core.app.NotificationCompat;
+import androidx.media.app.NotificationCompat.MediaStyle;
+
+import com.getcapacitor.JSArray;
+import com.getcapacitor.JSObject;
+import com.getcapacitor.Plugin;
+import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.ActivityCallback;
+import com.getcapacitor.annotation.CapacitorPlugin;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+@CapacitorPlugin(name = "MediaNotificationPlugin")
+public class MediaNotificationPlugin extends Plugin {
+
+    private static final String CHANNEL_ID = "chhath_parv_media_channel";
+    private static final String RECOMMENDATION_CHANNEL_ID = "chhath_parv_recommendations";
+    private static final int NOTIFICATION_ID = 1001;
+    private static final int RECOMMENDATION_NOTIFICATION_ID = 2002;
+
+    public static final String ACTION_PLAY = "com.chhathparv.app.ACTION_PLAY";
+    public static final String ACTION_PAUSE = "com.chhathparv.app.ACTION_PAUSE";
+    public static final String ACTION_NEXT = "com.chhathparv.app.ACTION_NEXT";
+    public static final String ACTION_PREV = "com.chhathparv.app.ACTION_PREV";
+
+    private NotificationManager notificationManager;
+    private MediaSessionCompat mediaSession;
+    private BroadcastReceiver actionReceiver;
+
+    private PowerManager.WakeLock wakeLock;
+    private WifiManager.WifiLock wifiLock;
+
+    private String lastTitle = "Sunehre Geet";
+    private String lastArtist = "Playing Classic Melody";
+    private String lastCoverUrl = null;
+    private boolean lastIsPlaying = false;
+    private Bitmap lastBitmap = null;
+
+    private static MediaNotificationPlugin sInstance;
+
+    @Override
+    public void load() {
+        super.load();
+        sInstance = this;
+        Context context = getContext();
+        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        createNotificationChannel();
+
+        mediaSession = new MediaSessionCompat(context, "ChhathParvMediaSession");
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSession.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public void onPlay() {
+                dispatchAction(ACTION_PLAY);
+            }
+
+            @Override
+            public void onPause() {
+                dispatchAction(ACTION_PAUSE);
+            }
+
+            @Override
+            public void onSkipToNext() {
+                dispatchAction(ACTION_NEXT);
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                dispatchAction(ACTION_PREV);
+            }
+        });
+        mediaSession.setActive(true);
+
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        if (pm != null) {
+            wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "chhathparv:mediaWakeLock");
+            wakeLock.setReferenceCounted(false);
+        }
+
+        WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wm != null) {
+            wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "chhathparv:mediaWifiLock");
+            wifiLock.setReferenceCounted(false);
+        }
+
+        actionReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                String action = intent.getAction();
+                if (action != null) {
+                    dispatchAction(action);
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_PLAY);
+        filter.addAction(ACTION_PAUSE);
+        filter.addAction(ACTION_NEXT);
+        filter.addAction(ACTION_PREV);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(actionReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            context.registerReceiver(actionReceiver, filter);
+        }
+    }
+
+    public static void dispatchActionStatic(String action) {
+        if (sInstance != null) {
+            sInstance.dispatchAction(action);
+        }
+    }
+
+    public void dispatchAction(String action) {
+        if (getActivity() != null && bridge != null && bridge.getWebView() != null) {
+            getActivity().runOnUiThread(() -> {
+                bridge.getWebView().evaluateJavascript(
+                    "window.dispatchEvent(new CustomEvent('nativeMediaAction', { detail: { action: '" + action + "' } }));",
+                    null
+                );
+            });
+        }
+    }
+
+    private void acquireLocks() {
+        try {
+            if (wakeLock != null && !wakeLock.isHeld()) {
+                wakeLock.acquire(24 * 60 * 60 * 1000L);
+            }
+            if (wifiLock != null && !wifiLock.isHeld()) {
+                wifiLock.acquire();
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void releaseLocks() {
+        try {
+            if (wakeLock != null && wakeLock.isHeld()) {
+                wakeLock.release();
+            }
+            if (wifiLock != null && wifiLock.isHeld()) {
+                wifiLock.release();
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID,
+                "Music Playback Controls",
+                NotificationManager.IMPORTANCE_LOW
+            );
+            channel.setDescription("Shows media controls on lock screen and notification shade");
+            channel.setShowBadge(false);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+            NotificationChannel recChannel = new NotificationChannel(
+                RECOMMENDATION_CHANNEL_ID,
+                "दैनिक गीत सिफ़ारिशें (Song Recommendations)",
+                NotificationManager.IMPORTANCE_DEFAULT
+            );
+            recChannel.setDescription("Shows delightful nostalgic song recommendations and classical melodies");
+            recChannel.setShowBadge(true);
+            recChannel.enableVibration(true);
+
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+                notificationManager.createNotificationChannel(recChannel);
+            }
+        }
+    }
+
+    private void buildAndShowNotification(String title, String artist, boolean isPlaying, Bitmap bitmap) {
+        Context context = getContext();
+        if (context == null || notificationManager == null) return;
+
+        int state = isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
+        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
+            .setActions(
+                PlaybackStateCompat.ACTION_PLAY |
+                PlaybackStateCompat.ACTION_PAUSE |
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+            )
+            .setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 1.0f);
+        mediaSession.setPlaybackState(stateBuilder.build());
+
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+
+        Intent prevIntent = new Intent(ACTION_PREV).setPackage(context.getPackageName());
+        PendingIntent pPrev = PendingIntent.getBroadcast(context, 101, prevIntent, flags);
+
+        Intent playIntent = new Intent(ACTION_PLAY).setPackage(context.getPackageName());
+        PendingIntent pPlay = PendingIntent.getBroadcast(context, 102, playIntent, flags);
+
+        Intent pauseIntent = new Intent(ACTION_PAUSE).setPackage(context.getPackageName());
+        PendingIntent pPause = PendingIntent.getBroadcast(context, 103, pauseIntent, flags);
+
+        Intent nextIntent = new Intent(ACTION_NEXT).setPackage(context.getPackageName());
+        PendingIntent pNext = PendingIntent.getBroadcast(context, 104, nextIntent, flags);
+
+        Intent contentIntent = new Intent(context, MainActivity.class);
+        contentIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pContent = PendingIntent.getActivity(context, 100, contentIntent, flags);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_media_play)
+            .setContentTitle(title)
+            .setContentText(artist)
+            .setContentIntent(pContent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOngoing(isPlaying)
+            .setShowWhen(false)
+            .addAction(android.R.drawable.ic_media_previous, "Previous", pPrev)
+            .addAction(isPlaying ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play, isPlaying ? "Pause" : "Play", isPlaying ? pPause : pPlay)
+            .addAction(android.R.drawable.ic_media_next, "Next", pNext)
+            .setStyle(new MediaStyle()
+                .setMediaSession(mediaSession.getSessionToken())
+                .setShowActionsInCompactView(0, 1, 2)
+            )
+            .setPriority(NotificationCompat.PRIORITY_MAX);
+
+        if (bitmap != null) {
+            builder.setLargeIcon(bitmap);
+        }
+
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
+    }
+
+    @PluginMethod
+    public void updateNotification(PluginCall call) {
+        lastTitle = call.getString("title", "Sunehre Geet");
+        lastArtist = call.getString("artist", "Playing Classic Melody");
+        lastIsPlaying = Boolean.TRUE.equals(call.getBoolean("isPlaying", true));
+        String coverUrl = call.getString("coverUrl", null);
+        lastCoverUrl = coverUrl;
+
+        if (lastIsPlaying) {
+            acquireLocks();
+        } else {
+            releaseLocks();
+        }
+
+        Context context = getContext();
+        if (context != null) {
+            try {
+                Intent serviceIntent = new Intent(context, MediaPlaybackService.class);
+                serviceIntent.putExtra("title", lastTitle);
+                serviceIntent.putExtra("artist", lastArtist);
+                serviceIntent.putExtra("isPlaying", lastIsPlaying);
+                serviceIntent.putExtra("coverUrl", coverUrl);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(serviceIntent);
+                } else {
+                    context.startService(serviceIntent);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        buildAndShowNotification(lastTitle, lastArtist, lastIsPlaying, lastBitmap);
+
+        if (coverUrl != null && !coverUrl.isEmpty()) {
+            new Thread(() -> {
+                try {
+                    Bitmap bitmap = null;
+                    if (coverUrl.startsWith("/")) {
+                        InputStream is = context.getAssets().open("public" + coverUrl);
+                        bitmap = BitmapFactory.decodeStream(is);
+                    } else {
+                        URL url = new URL(coverUrl);
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setDoInput(true);
+                        conn.connect();
+                        InputStream input = conn.getInputStream();
+                        bitmap = BitmapFactory.decodeStream(input);
+                    }
+                    if (bitmap != null) {
+                        lastBitmap = bitmap;
+                        buildAndShowNotification(lastTitle, lastArtist, lastIsPlaying, bitmap);
+                    }
+                } catch (Exception ignored) {}
+            }).start();
+        }
+
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void hideNotification(PluginCall call) {
+        releaseLocks();
+        Context context = getContext();
+        if (context != null) {
+            try {
+                Intent serviceIntent = new Intent(context, MediaPlaybackService.class);
+                serviceIntent.setAction("STOP");
+                context.startService(serviceIntent);
+            } catch (Exception ignored) {}
+        }
+        if (notificationManager != null) {
+            notificationManager.cancel(NOTIFICATION_ID);
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void startOfficialGoogleSignIn(PluginCall call) {
+        try {
+            Intent intent = AccountManager.newChooseAccountIntent(
+                null, null, new String[]{"com.google"}, null, null, null, null
+            );
+            startActivityForResult(call, intent, "handleGoogleAccountResult");
+        } catch (Exception e) {
+            call.reject("Google Sign-In failed: " + e.getMessage());
+        }
+    }
+
+    @ActivityCallback
+    private void handleGoogleAccountResult(PluginCall call, ActivityResult result) {
+        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+            String accountName = result.getData().getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            if (accountName != null && !accountName.isEmpty()) {
+                JSObject ret = new JSObject();
+                ret.put("success", true);
+                ret.put("email", accountName);
+                ret.put("name", accountName.split("@")[0]);
+                ret.put("sub", "g_" + Math.abs(accountName.hashCode()));
+                call.resolve(ret);
+                return;
+            }
+        }
+        JSObject ret = new JSObject();
+        ret.put("success", false);
+        ret.put("error", "Google Account selection cancelled.");
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void startSpeechRecognition(PluginCall call) {
+        try {
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-IN");
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "en-IN");
+            intent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, true);
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak song or artist name (e.g. Kishore Kumar, Lag Ja Gale)...");
+            startActivityForResult(call, intent, "handleSpeechResult");
+        } catch (Exception e) {
+            JSObject ret = new JSObject();
+            ret.put("success", false);
+            ret.put("error", "Speech recognition unavailable: " + e.getMessage());
+            call.resolve(ret);
+        }
+    }
+
+    @ActivityCallback
+    private void handleSpeechResult(PluginCall call, ActivityResult result) {
+        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+            java.util.ArrayList<String> matches = result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (matches != null && !matches.isEmpty()) {
+                JSObject ret = new JSObject();
+                ret.put("success", true);
+                ret.put("text", matches.get(0));
+                call.resolve(ret);
+                return;
+            }
+        }
+        JSObject ret = new JSObject();
+        ret.put("success", false);
+        ret.put("error", "No speech recognized");
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void saveLocalCloudBackup(PluginCall call) {
+        String email = call.getString("email", "default");
+        String backupData = call.getString("data", "{}");
+        try {
+            if (backupData == null || backupData.length() < 10) {
+                call.reject("Empty data");
+                return;
+            }
+
+            JSONObject incoming = new JSONObject(backupData);
+            JSONArray incomingIds = incoming.optJSONArray("likedSongIds");
+            JSONArray incomingSongs = incoming.optJSONArray("likedSongs");
+            JSONArray incomingPlaylists = incoming.optJSONArray("playlists");
+            JSONArray incomingRecent = incoming.optJSONArray("recentSongIds");
+
+            Set<String> finalLikedIds = new LinkedHashSet<>();
+            Map<String, JSONObject> finalLikedSongs = new LinkedHashMap<>();
+            Map<String, JSONObject> finalPlaylists = new LinkedHashMap<>();
+            Set<String> finalRecentIds = new LinkedHashSet<>();
+
+            if (incomingIds != null) {
+                for (int i = 0; i < incomingIds.length(); i++) {
+                    String id = incomingIds.optString(i);
+                    if (id != null && !id.trim().isEmpty()) finalLikedIds.add(id.trim());
+                }
+            }
+            if (incomingSongs != null) {
+                for (int i = 0; i < incomingSongs.length(); i++) {
+                    JSONObject s = incomingSongs.optJSONObject(i);
+                    if (s != null && s.has("id")) {
+                        finalLikedSongs.put(s.getString("id"), s);
+                        finalLikedIds.add(s.getString("id"));
+                    }
+                }
+            }
+            if (incomingPlaylists != null) {
+                for (int i = 0; i < incomingPlaylists.length(); i++) {
+                    JSONObject p = incomingPlaylists.optJSONObject(i);
+                    if (p != null && p.has("id")) finalPlaylists.put(p.getString("id"), p);
+                }
+            }
+            if (incomingRecent != null) {
+                for (int i = 0; i < incomingRecent.length(); i++) {
+                    String rid = incomingRecent.optString(i);
+                    if (rid != null && !rid.trim().isEmpty()) finalRecentIds.add(rid.trim());
+                }
+            }
+
+            // Build final merged payload
+            incoming.put("version", "14.0");
+            incoming.put("exportedAt", System.currentTimeMillis());
+            incoming.put("likedSongIds", new JSONArray(finalLikedIds));
+            incoming.put("likedSongs", new JSONArray(finalLikedSongs.values()));
+            incoming.put("playlists", new JSONArray(finalPlaylists.values()));
+            incoming.put("recentSongIds", new JSONArray(finalRecentIds));
+
+            String finalDataStr = incoming.toString();
+            byte[] bytes = finalDataStr.getBytes("utf-8");
+            String userFileName = "backup_" + Math.abs(email.toLowerCase().trim().hashCode()) + ".json";
+            Context ctx = getContext();
+
+            // === Save ONLY to App Private Storage (Never litters public Downloads folder) ===
+            if (ctx != null) {
+                try {
+                    File internalDir = new File(ctx.getFilesDir(), "ChhathParv");
+                    if (!internalDir.exists()) internalDir.mkdirs();
+                    writeFile(new File(internalDir, userFileName), bytes);
+                    writeFile(new File(internalDir, "backup_latest.json"), bytes);
+                } catch (Exception ignored) {}
+
+                try {
+                    File extDir = ctx.getExternalFilesDir(null);
+                    if (extDir != null) {
+                        File extAppDir = new File(extDir, "ChhathParv");
+                        if (!extAppDir.exists()) extAppDir.mkdirs();
+                        writeFile(new File(extAppDir, userFileName), bytes);
+                        writeFile(new File(extAppDir, "backup_latest.json"), bytes);
+                    }
+                } catch (Exception ignored) {}
+
+                // Clean up any old duplicate backup files from public Downloads folder
+                try {
+                    File dlDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    if (dlDir != null) {
+                        File dlAppDir = new File(dlDir, "ChhathParv");
+                        if (dlAppDir.exists() && dlAppDir.isDirectory()) {
+                            File[] oldFiles = dlAppDir.listFiles();
+                            if (oldFiles != null) {
+                                for (File of : oldFiles) of.delete();
+                            }
+                            dlAppDir.delete();
+                        }
+                    }
+                } catch (Exception ignored) {}
+            }
+
+            JSObject ret = new JSObject();
+            ret.put("success", true);
+            ret.put("songCount", finalLikedIds.size());
+            call.resolve(ret);
+        } catch (Exception e) {
+            call.reject("Failed to save backup: " + e.getMessage());
+        }
+    }
+
+    // Helper: write bytes to a File safely
+    private void writeFile(File f, byte[] bytes) {
+        try {
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(bytes);
+            fos.flush();
+            fos.close();
+        } catch (Exception ignored) {}
+    }
+
+    @PluginMethod
+    public void loadLocalCloudBackup(PluginCall call) {
+        String email = call.getString("email", "default");
+        try {
+            Set<String> allLikedIds = new LinkedHashSet<>();
+            Map<String, JSONObject> allLikedSongs = new LinkedHashMap<>();
+            Map<String, JSONObject> allPlaylists = new LinkedHashMap<>();
+            Set<String> allRecentIds = new LinkedHashSet<>();
+            JSONObject latestUser = null;
+            long latestExportTime = 0;
+            int foundFilesCount = 0;
+
+            Context ctx = getContext();
+
+            // === 1. ANDROID 10+ (API 29+): Read from MediaStore Downloads ===
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ctx != null) {
+                ContentResolver resolver = ctx.getContentResolver();
+                try {
+                    String[] projection = { MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DISPLAY_NAME };
+                    Cursor cursor = resolver.query(
+                        MediaStore.Downloads.EXTERNAL_CONTENT_URI, projection,
+                        MediaStore.MediaColumns.DISPLAY_NAME + " LIKE '%backup%' OR " +
+                        MediaStore.MediaColumns.DISPLAY_NAME + " LIKE '%sunehre%' OR " +
+                        MediaStore.MediaColumns.DISPLAY_NAME + " LIKE '%.json%'", null,
+                        MediaStore.MediaColumns.DATE_MODIFIED + " DESC"
+                    );
+                    if (cursor != null) {
+                        while (cursor.moveToNext()) {
+                            String disp = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME));
+                            if (disp != null && disp.toLowerCase().contains("carvaan")) continue;
+                            long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID));
+                            Uri fileUri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id);
+                            try {
+                                InputStream is = resolver.openInputStream(fileUri);
+                                if (is != null) {
+                                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
+                                    StringBuilder sb = new StringBuilder();
+                                    String line;
+                                    while ((line = reader.readLine()) != null) sb.append(line);
+                                    reader.close();
+                                    String content = sb.toString().trim();
+                                    if (content.startsWith("{")) {
+                                        JSONObject parsed = new JSONObject(content);
+                                        mergeBackupJson(parsed, allLikedIds, allLikedSongs, allPlaylists, allRecentIds);
+                                        foundFilesCount++;
+                                        long exp = parsed.optLong("exportedAt", 0);
+                                        if (exp > latestExportTime) {
+                                            latestExportTime = exp;
+                                            if (parsed.has("user")) latestUser = parsed.optJSONObject("user");
+                                        }
+                                    }
+                                }
+                            } catch (Exception ignored) {}
+                        }
+                        cursor.close();
+                    }
+                } catch (Exception ignored) {}
+
+                // Also query MediaStore Audio
+                try {
+                    String[] projection = { MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DISPLAY_NAME };
+                    Cursor cursor = resolver.query(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection,
+                        MediaStore.Audio.Media.DISPLAY_NAME + " LIKE '%backup%' OR " +
+                        MediaStore.Audio.Media.DISPLAY_NAME + " LIKE '%sunehre%' OR " +
+                        MediaStore.Audio.Media.DISPLAY_NAME + " LIKE '%.json%'", null,
+                        MediaStore.Audio.Media.DATE_MODIFIED + " DESC"
+                    );
+                    if (cursor != null) {
+                        while (cursor.moveToNext()) {
+                            String disp = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
+                            if (disp != null && disp.toLowerCase().contains("carvaan")) continue;
+                            long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                            Uri fileUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+                            try {
+                                InputStream is = resolver.openInputStream(fileUri);
+                                if (is != null) {
+                                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
+                                    StringBuilder sb = new StringBuilder();
+                                    String line;
+                                    while ((line = reader.readLine()) != null) sb.append(line);
+                                    reader.close();
+                                    String content = sb.toString().trim();
+                                    if (content.startsWith("{")) {
+                                        JSONObject parsed = new JSONObject(content);
+                                        mergeBackupJson(parsed, allLikedIds, allLikedSongs, allPlaylists, allRecentIds);
+                                        foundFilesCount++;
+                                        long exp = parsed.optLong("exportedAt", 0);
+                                        if (exp > latestExportTime) {
+                                            latestExportTime = exp;
+                                            if (parsed.has("user")) latestUser = parsed.optJSONObject("user");
+                                        }
+                                    }
+                                }
+                            } catch (Exception ignored) {}
+                        }
+                        cursor.close();
+                    }
+                } catch (Exception ignored) {}
+            }
+
+            // === 2. Direct File Scan across all storage folders ===
+            List<File> searchDirs = new ArrayList<>();
+            try {
+                File docDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+                if (docDir != null) { searchDirs.add(new File(docDir, "ChhathParv")); searchDirs.add(docDir); }
+            } catch (Exception ignored) {}
+            try {
+                File dlDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                if (dlDir != null) { searchDirs.add(new File(dlDir, "ChhathParv")); searchDirs.add(dlDir); }
+            } catch (Exception ignored) {}
+            try {
+                File musDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+                if (musDir != null) { searchDirs.add(new File(musDir, "ChhathParv")); searchDirs.add(musDir); }
+            } catch (Exception ignored) {}
+            try {
+                File sd = Environment.getExternalStorageDirectory();
+                if (sd != null) searchDirs.add(new File(sd, "ChhathParv"));
+            } catch (Exception ignored) {}
+
+            searchDirs.add(new File("/sdcard/ChhathParv"));
+            searchDirs.add(new File("/sdcard/Download/ChhathParv"));
+            searchDirs.add(new File("/sdcard/Download"));
+            searchDirs.add(new File("/sdcard/Documents/ChhathParv"));
+            searchDirs.add(new File("/sdcard/Documents"));
+            searchDirs.add(new File("/sdcard/Music/ChhathParv"));
+            searchDirs.add(new File("/sdcard/Music"));
+
+            if (ctx != null) {
+                try {
+                    File extDir = ctx.getExternalFilesDir(null);
+                    if (extDir != null) { searchDirs.add(new File(extDir, "ChhathParv")); searchDirs.add(extDir); }
+                } catch (Exception ignored) {}
+                try {
+                    searchDirs.add(new File(ctx.getFilesDir(), "ChhathParv"));
+                    searchDirs.add(ctx.getFilesDir());
+                } catch (Exception ignored) {}
+            }
+
+            for (File dir : searchDirs) {
+                if (dir == null || !dir.exists() || !dir.isDirectory()) continue;
+                File[] files = dir.listFiles((d, name) -> {
+                    if (name == null) return false;
+                    String lower = name.toLowerCase();
+                    if (lower.contains("carvaan")) return false;
+                    return lower.contains("backup") || lower.contains("sunehre") || lower.endsWith(".json") || lower.endsWith(".jason");
+                });
+                if (files == null) continue;
+
+                for (File f : files) {
+                    if (!f.isFile() || f.length() < 10) continue;
+                    try {
+                        FileInputStream fis = new FileInputStream(f);
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"));
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) sb.append(line);
+                        reader.close();
+
+                        String content = sb.toString().trim();
+                        if (content.startsWith("{")) {
+                            JSONObject json = new JSONObject(content);
+                            mergeBackupJson(json, allLikedIds, allLikedSongs, allPlaylists, allRecentIds);
+                            foundFilesCount++;
+                            long exp = json.optLong("exportedAt", f.lastModified());
+                            if (exp > latestExportTime) {
+                                latestExportTime = exp;
+                                if (json.has("user")) latestUser = json.optJSONObject("user");
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
+            }
+
+            if (allLikedIds.isEmpty() && allPlaylists.isEmpty()) {
+                JSObject ret = new JSObject();
+                ret.put("success", false);
+                ret.put("message", "No backups found");
+                call.resolve(ret);
+                return;
+            }
+
+            // Build merged JSON
+            JSONObject merged = new JSONObject();
+            merged.put("version", "14.0");
+            merged.put("exportedAt", latestExportTime > 0 ? latestExportTime : System.currentTimeMillis());
+            if (latestUser != null) {
+                merged.put("user", latestUser);
+            } else {
+                JSONObject defaultUser = new JSONObject();
+                defaultUser.put("email", email);
+                defaultUser.put("name", "User");
+                merged.put("user", defaultUser);
+            }
+            merged.put("likedSongIds", new JSONArray(allLikedIds));
+            merged.put("likedSongs", new JSONArray(allLikedSongs.values()));
+            merged.put("playlists", new JSONArray(allPlaylists.values()));
+            merged.put("recentSongIds", new JSONArray(allRecentIds));
+
+            JSObject ret = new JSObject();
+            ret.put("success", true);
+            ret.put("data", merged.toString());
+            ret.put("songCount", allLikedIds.size());
+            ret.put("filesScanned", foundFilesCount);
+            call.resolve(ret);
+        } catch (Exception e) {
+            JSObject ret = new JSObject();
+            ret.put("success", false);
+            ret.put("error", e.getMessage());
+            call.resolve(ret);
+        }
+    }
+
+    private boolean isCarvaanTrack(JSONObject s) {
+        if (s == null) return false;
+        String url = s.optString("audioUrl", "").toLowerCase();
+        String artist = s.optString("artist", "").toLowerCase();
+        String movie = s.optString("movie", "").toLowerCase();
+        String id = s.optString("id", "");
+        if (url.contains("carvaan") || url.contains("archive.org/download/saregama-carvaan")) return true;
+        if (movie.contains("saregama") || movie.contains("carvaan")) return true;
+        if (artist.contains("ameen sayani") && url.contains("archive.org")) return true;
+        if (artist.contains("vintage classics") && url.contains("archive.org")) return true;
+        if (id.matches("^\\d+$") && url.contains("archive.org")) return true;
+        return false;
+    }
+
+    // Helper: merge a backup JSON object into running accumulators
+    private void mergeBackupJson(JSONObject json, Set<String> allLikedIds, Map<String, JSONObject> allLikedSongs,
+                                  Map<String, JSONObject> allPlaylists, Set<String> allRecentIds) {
+        try {
+            if (json.has("user")) {
+                JSONObject u = json.optJSONObject("user");
+                if (u != null) {
+                    String em = u.optString("email", "").toLowerCase();
+                    String nm = u.optString("name", "").toLowerCase();
+                    if (em.contains("carvaan") || nm.contains("carvaan")) return;
+                }
+            }
+
+            Set<String> carvaanIds = new HashSet<>();
+            if (json.has("likedSongs")) {
+                JSONArray songs = json.getJSONArray("likedSongs");
+                for (int i = 0; i < songs.length(); i++) {
+                    JSONObject s = songs.optJSONObject(i);
+                    if (s != null && s.has("id")) {
+                        String sid = s.getString("id");
+                        if (isCarvaanTrack(s)) {
+                            carvaanIds.add(sid);
+                            continue;
+                        }
+                        allLikedSongs.put(sid, s);
+                        allLikedIds.add(sid);
+                    }
+                }
+            }
+            if (json.has("likedSongIds")) {
+                JSONArray ids = json.getJSONArray("likedSongIds");
+                for (int i = 0; i < ids.length(); i++) {
+                    String id = ids.optString(i);
+                    if (id != null && !id.trim().isEmpty() && !carvaanIds.contains(id.trim())) {
+                        allLikedIds.add(id.trim());
+                    }
+                }
+            }
+            if (json.has("playlists")) {
+                JSONArray pls = json.getJSONArray("playlists");
+                for (int i = 0; i < pls.length(); i++) {
+                    JSONObject p = pls.optJSONObject(i);
+                    if (p != null && p.has("id")) {
+                        String pid = p.getString("id");
+                        if (allPlaylists.containsKey(pid)) {
+                            JSONObject existingPl = allPlaylists.get(pid);
+                            JSONArray eIds = existingPl.optJSONArray("songIds");
+                            JSONArray nIds = p.optJSONArray("songIds");
+                            Set<String> merged = new LinkedHashSet<>();
+                            if (eIds != null) for (int j = 0; j < eIds.length(); j++) merged.add(eIds.getString(j));
+                            if (nIds != null) for (int j = 0; j < nIds.length(); j++) merged.add(nIds.getString(j));
+                            existingPl.put("songIds", new JSONArray(merged));
+                        } else {
+                            allPlaylists.put(pid, p);
+                        }
+                    }
+                }
+            }
+            if (json.has("recentSongIds")) {
+                JSONArray rec = json.getJSONArray("recentSongIds");
+                for (int i = 0; i < rec.length(); i++) {
+                    String rid = rec.optString(i);
+                    if (rid != null && !rid.trim().isEmpty()) allRecentIds.add(rid.trim());
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+
+    @PluginMethod
+    public void getDeviceGoogleAccounts(PluginCall call) {
+        try {
+            AccountManager am = AccountManager.get(getContext());
+            Account[] accounts = am.getAccountsByType("com.google");
+            JSArray arr = new JSArray();
+            if (accounts != null) {
+                for (Account acc : accounts) {
+                    JSObject o = new JSObject();
+                    o.put("name", acc.name.split("@")[0]);
+                    o.put("email", acc.name);
+                    arr.put(o);
+                }
+            }
+            JSObject ret = new JSObject();
+            ret.put("accounts", arr);
+            call.resolve(ret);
+        } catch (Exception e) {
+            JSObject ret = new JSObject();
+            ret.put("accounts", new JSArray());
+            call.resolve(ret);
+        }
+    }
+
+    @PluginMethod
+    public void fetchHttpUrl(PluginCall call) {
+        String urlStr = call.getString("url", "");
+        if (urlStr.isEmpty()) {
+            call.reject("URL required");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                URL url = new URL(urlStr);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)");
+                conn.setConnectTimeout(2800);
+                conn.setReadTimeout(2800);
+
+                int code = conn.getResponseCode();
+                if (code >= 200 && code < 300) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        sb.append(line).append("\n");
+                    }
+                    in.close();
+
+                    JSObject ret = new JSObject();
+                    ret.put("content", sb.toString());
+                    call.resolve(ret);
+                } else {
+                    JSObject ret = new JSObject();
+                    ret.put("content", "");
+                    call.resolve(ret);
+                }
+            } catch (Exception e) {
+                JSObject ret = new JSObject();
+                ret.put("content", "");
+                call.resolve(ret);
+            }
+        }).start();
+    }
+
+    @PluginMethod
+    public void sendSongRecommendation(PluginCall call) {
+        String phrase = call.getString("phrase", "मौसम है सुहाना, सुनिए यह सदाबहार तराना 🎶");
+        String songTitle = call.getString("songTitle", "Sunehre Geet");
+        String songArtist = call.getString("songArtist", "Evergreen Melody");
+        String songId = call.getString("songId", "");
+        String coverUrl = call.getString("coverUrl", "");
+
+        Context context = getContext();
+        if (context == null || notificationManager == null) {
+            call.reject("Context unavailable");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                Bitmap bitmap = null;
+                if (coverUrl != null && !coverUrl.isEmpty()) {
+                    try {
+                        URL url = new URL(coverUrl);
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setDoInput(true);
+                        conn.setConnectTimeout(3000);
+                        conn.setReadTimeout(3000);
+                        conn.connect();
+                        InputStream input = conn.getInputStream();
+                        bitmap = BitmapFactory.decodeStream(input);
+                    } catch (Exception ignored) {}
+                }
+
+                if (bitmap == null) {
+                    try {
+                        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.splash);
+                    } catch (Exception ignored) {}
+                }
+
+                Intent intent = new Intent(context, MainActivity.class);
+                intent.putExtra("recommendationSongId", songId);
+                intent.putExtra("autoPlay", true);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    flags |= PendingIntent.FLAG_IMMUTABLE;
+                }
+                PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, flags);
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, RECOMMENDATION_CHANNEL_ID)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(phrase)
+                    .setContentText(songTitle + " • " + songArtist)
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+                if (bitmap != null) {
+                    builder.setLargeIcon(bitmap);
+                    builder.setStyle(new NotificationCompat.BigPictureStyle()
+                        .bigPicture(bitmap)
+                        .setBigContentTitle(phrase)
+                        .setSummaryText(songTitle + " — " + songArtist));
+                } else {
+                    builder.setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(songTitle + "\nगायक: " + songArtist + "\n\nक्लिक करें और सुनिए यह ख़ास नगमा!"));
+                }
+
+                notificationManager.notify(RECOMMENDATION_NOTIFICATION_ID, builder.build());
+
+                JSObject ret = new JSObject();
+                ret.put("success", true);
+                call.resolve(ret);
+            } catch (Exception e) {
+                call.reject("Failed: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    @PluginMethod
+    public void setScreenOrientation(PluginCall call) {
+        String orientation = call.getString("orientation", "unspecified");
+        Activity activity = getActivity();
+        if (activity != null) {
+            activity.runOnUiThread(() -> {
+                try {
+                    if ("landscape".equals(orientation)) {
+                        activity.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                    } else if ("portrait".equals(orientation)) {
+                        activity.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    } else {
+                        activity.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                    }
+                } catch (Exception ignored) {}
+                call.resolve();
+            });
+        } else {
+            call.resolve();
+        }
+    }
+}
