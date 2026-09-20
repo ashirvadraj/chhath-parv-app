@@ -165,11 +165,11 @@ assert(!moreViewContent.includes('18 नवंबर • भोर 03:30'), 'Out
 // 7. AUDIT APP VERSION NUMBERS
 console.log('\n--- TEST GROUP 7: RELEASE VERSIONING AUDIT ---');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-assert(pkg.version === '1.4.0', `package.json version is 1.4.0 (found ${pkg.version})`);
+assert(pkg.version === '1.4.1', `package.json version is 1.4.1 (found ${pkg.version})`);
 
 const gradleContent = fs.readFileSync('android/app/build.gradle', 'utf8');
-assert(gradleContent.includes('versionCode 5'), 'build.gradle versionCode is 5');
-assert(gradleContent.includes('versionName "1.4.0"'), 'build.gradle versionName is 1.4.0');
+assert(gradleContent.includes('versionCode 6'), 'build.gradle versionCode is 6');
+assert(gradleContent.includes('versionName "1.4.1"'), 'build.gradle versionName is 1.4.1');
 
 console.log('\n================================================================');
 console.log(`  QA AUDIT COMPLETE: ${passedTests}/${totalTests} TESTS PASSED`);
