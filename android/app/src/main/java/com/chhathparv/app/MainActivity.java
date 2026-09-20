@@ -82,11 +82,11 @@ public class MainActivity extends BridgeActivity {
             } else if (year == 2025) {
                 target.set(2025, java.util.Calendar.OCTOBER, 25, 6, 0, 0);
                 if (now > target.getTimeInMillis() + (3L * 24 * 3600 * 1000)) {
-                    target.set(2026, java.util.Calendar.NOVEMBER, 15, 6, 0, 0);
+                    target.set(2026, java.util.Calendar.NOVEMBER, 13, 6, 0, 0);
                     year = 2026;
                 }
             } else if (year == 2026) {
-                target.set(2026, java.util.Calendar.NOVEMBER, 15, 6, 0, 0);
+                target.set(2026, java.util.Calendar.NOVEMBER, 13, 6, 0, 0);
                 if (now > target.getTimeInMillis() + (3L * 24 * 3600 * 1000)) {
                     target.set(2027, java.util.Calendar.NOVEMBER, 4, 6, 0, 0);
                     year = 2027;

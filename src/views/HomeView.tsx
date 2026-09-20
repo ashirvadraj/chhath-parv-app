@@ -40,8 +40,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigateTab, onSelectDay }
   const completedItems = checklist.filter((i) => i.isCompleted).length;
   const progressPercent = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
-  // Countdown to Chhath (Nahay Khay - Nov 15, 2026)
-  const targetDate = new Date('2026-11-15T06:00:00+05:30').getTime();
+  // Countdown to Chhath (Nahay Khay - Nov 13, 2026)
+  const targetDate = new Date('2026-11-13T06:00:00+05:30').getTime();
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({
     days: 0,
     hours: 0,

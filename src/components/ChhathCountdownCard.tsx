@@ -47,10 +47,10 @@ const CHHATH_SCHEDULE: FestivalSchedule[] = [
   },
   {
     year: 2026,
-    nahayKhay: new Date('2026-11-15T06:00:00+05:30'),
-    parana: new Date('2026-11-18T09:00:00+05:30'),
-    dateStr: 'रविवार, 15 नवंबर 2026',
-    shortDateStr: '15 नवंबर 2026',
+    nahayKhay: new Date('2026-11-13T06:00:00+05:30'),
+    parana: new Date('2026-11-16T09:00:00+05:30'),
+    dateStr: 'शुक्रवार, 13 नवंबर 2026',
+    shortDateStr: '13-16 नवंबर 2026',
     thithiStr: 'कार्तिक शुक्ल चतुर्थी'
   },
   {

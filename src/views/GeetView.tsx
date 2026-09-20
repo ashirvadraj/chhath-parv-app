@@ -49,6 +49,10 @@ export const GeetView: React.FC = () => {
         normalized = 'कल्पना पटोवारी (Kalpana Patowary)';
       } else if (normalized.includes('देवी') || normalized.toLowerCase().includes('devi')) {
         normalized = 'देवी (Devi)';
+      } else if (normalized.includes('सोनू निगम') || normalized.toLowerCase().includes('sonu nigam')) {
+        normalized = 'सोनू निगम (Sonu Nigam)';
+      } else if (normalized.includes('पलक मुच्छल') || normalized.toLowerCase().includes('palak muchhal')) {
+        normalized = 'पलक मुच्छल (Palak Muchhal)';
       } else if (normalized.includes('मैथिली') || normalized.toLowerCase().includes('maithili')) {
         normalized = 'मैथिली पारंपरिक लोकगीत';
       } else if (normalized.includes('सूर्य वंदना') || normalized.includes('स्तुति')) {
@@ -117,7 +121,8 @@ export const GeetView: React.FC = () => {
     return songsList.filter((song) => {
       const matchesSearch = 
         song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        song.artist.toLowerCase().includes(searchQuery.toLowerCase());
+        song.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (song.lyrics ? song.lyrics.toLowerCase().includes(searchQuery.toLowerCase()) : false);
       
       const matchesCategory = selectedCategory === 'All' || song.category === selectedCategory;
       const matchesLanguage = selectedLanguage === 'All' || song.language === selectedLanguage;
@@ -431,8 +436,13 @@ export const GeetView: React.FC = () => {
                             }`}>
                               {song.title}
                             </h4>
-                            <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate mt-0.5">
-                              {song.category} • <span className="text-amber-600 dark:text-amber-400">{song.language}</span>
+                            <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate mt-0.5 flex items-center flex-wrap gap-1">
+                              <span>{song.category}</span>
+                              <span>•</span>
+                              <span className="text-amber-600 dark:text-amber-400">{song.language}</span>
+                              <span className="inline-flex items-center text-[10px] text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-1.5 py-0.2 rounded-md">
+                                <Mic2 className="w-2.5 h-2.5 mr-0.5" />बोल
+                              </span>
                             </p>
                           </div>
                         </div>
@@ -528,8 +538,13 @@ export const GeetView: React.FC = () => {
                       }`}>
                         {song.title}
                       </h4>
-                      <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate mt-0.5">
-                        {song.artist} • <span className="text-amber-600 dark:text-amber-400">{song.language}</span>
+                      <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate mt-0.5 flex items-center flex-wrap gap-1">
+                        <span>{song.artist}</span>
+                        <span>•</span>
+                        <span className="text-amber-600 dark:text-amber-400">{song.language}</span>
+                        <span className="inline-flex items-center text-[10px] text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-1.5 py-0.2 rounded-md">
+                          <Mic2 className="w-2.5 h-2.5 mr-0.5" />बोल
+                        </span>
                       </p>
                     </div>
                   </div>

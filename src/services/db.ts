@@ -8,6 +8,7 @@ import {
   PersonalNote, 
   FastingTrackerState
 } from '../types';
+import { FULL_SONG_LYRICS } from './fullSongLyrics';
 
 const STORAGE_KEYS = {
   SETTINGS: 'chhath_parv_settings',
@@ -44,8 +45,8 @@ export const INITIAL_DAYS: FestivalDay[] = [
     title: 'Nahay Khay',
     titleHindi: 'नहाय-खाय',
     titleBhojpuri: 'नहाय-खाय (संयम व शुद्धि)',
-    date: '2026-11-15',
-    dayOfWeek: 'रविवार (Sunday)',
+    date: '2026-11-13',
+    dayOfWeek: 'शुक्रवार (Friday)',
     ritualName: 'आत्म-शुद्धि एवं घर की पवित्रता',
     tagline: 'पवित्रता, शुद्धि और सात्विक संकल्प का प्रथम दिवस',
     meaning: 'नहाय-खाय का अर्थ है स्नान करके सात्विक भोजन ग्रहण करना। यह चार दिवसीय महापर्व की शुरुआत और शारीरिक व मानसिक शुद्धि का संकल्प है।',
@@ -75,8 +76,8 @@ export const INITIAL_DAYS: FestivalDay[] = [
     title: 'Kharna / Lohanda',
     titleHindi: 'खरना (लोहंडा)',
     titleBhojpuri: 'खरना (रसियाव-रोटी)',
-    date: '2026-11-16',
-    dayOfWeek: 'सोमवार (Monday)',
+    date: '2026-11-14',
+    dayOfWeek: 'शनिवार (Saturday)',
     ritualName: 'संध्या पूजन एवं निर्जला व्रत आरंभ',
     tagline: 'दिनभर निर्जला उपवास और संध्या काल में गुड़ की खीर का महाप्रसाद',
     meaning: 'खरना का अर्थ है अंतःकरण की शुद्धि। इस दिन से व्रती का 36 घंटे का कठिन निर्जला व्रत प्रारंभ होता है।',
@@ -106,8 +107,8 @@ export const INITIAL_DAYS: FestivalDay[] = [
     title: 'Sandhya Arghya',
     titleHindi: 'संध्या अर्घ्य (पहिला अरग)',
     titleBhojpuri: 'सँझिया अरघ (अस्ताचलगामी सूर्य)',
-    date: '2026-11-17',
-    dayOfWeek: 'मंगलवार (Tuesday)',
+    date: '2026-11-15',
+    dayOfWeek: 'रविवार (Sunday)',
     ritualName: 'अस्ताचलगामी सूर्य को प्रथम अर्घ्य',
     tagline: 'अस्त होते सूर्य को नमन — संसार को कृतज्ञता का अनुपम संदेश',
     meaning: 'सनातन संस्कृति का यह एकमात्र ऐसा पर्व है जहाँ डूबते हुए सूर्य को भी अर्घ्य देकर उनके उपकारों के प्रति कृतज्ञता प्रकट की जाती है।',
@@ -138,8 +139,8 @@ export const INITIAL_DAYS: FestivalDay[] = [
     title: 'Usha Arghya & Parana',
     titleHindi: 'उषा अर्घ्य एवं पारण (दूसरा अरग)',
     titleBhojpuri: 'भोरवा अरघ व पारन',
-    date: '2026-11-18',
-    dayOfWeek: 'बुधवार (Wednesday)',
+    date: '2026-11-16',
+    dayOfWeek: 'सोमवार (Monday)',
     ritualName: 'उदीयमान सूर्य को अर्घ्य एवं व्रत पूर्णता',
     tagline: 'अरुणोदय के साथ नई ऊर्जा का स्वागत और 36 घंटे के व्रत का पारण',
     meaning: 'उषा अर्घ्य नव-जीवन, आरोग्य और आशा का प्रतीक है। इसके साथ ही लोक आस्था का यह चार दिवसीय महापर्व संपन्न होता है।',
@@ -280,7 +281,7 @@ export const INITIAL_MANTRAS: MantraItem[] = [
 ];
 
 // Complete 50 Chhath Puja Songs Anthology
-export const INITIAL_SONGS: Song[] = [
+const RAW_SONGS: Song[] = [
   {
     "id": "song-1",
     "title": "काँच ही बाँस के बहँगिया",
@@ -979,9 +980,70 @@ export const INITIAL_SONGS: Song[] = [
     "audioUrl": "https://archive.org/download/maithilichathsongs/More%20He%20Sainya.mp3",
     "isFavorite": true,
     "sourceNote": "पारण के उपरांत संपूर्ण परिवार व समाज के कल्याण का महामंगल गान",
-    "lyrics": "छठ मईया के आशीष सब परिवार पर, बरसे अमृत धार...\nसुख, शांति, आरोग्य मिले, बढ़े प्रेम-संसार!\n\nपारण कईले व्रती माता, पूर्ण भईल अनुष्ठान।\nछठी माई और सूर्य देव के चरणों में शत-शत प्रणाम..."
+    "lyrics": "छठ मईया के आशीष सब परिवार पर, बरसे अमृत धार..."
+  },
+  {
+    "id": "song-51",
+    "title": "पहिले पहिल छठी मईया (सोनू निगम विशेष)",
+    "artist": "सोनू निगम (Sonu Nigam)",
+    "language": "Bhojpuri",
+    "category": "Traditional Chhath Geet",
+    "album": "छठी मईया भक्ति सागर",
+    "artwork": "/logo.svg",
+    "duration": 335,
+    "audioUrl": "https://archive.org/download/ugihen-suraj-gosaiyan-hey/Ugihen-Suraj-Gosaiyan-Hey.mp3",
+    "isFavorite": true,
+    "sourceNote": "सोनू निगम के मधुर कंठ से सजा पावन छठ लोकगीत",
+    "lyrics": "पहिले पहिल हम कईनी, छठी माई के बरतिया..."
+  },
+  {
+    "id": "song-52",
+    "title": "जय छठी मईया सुन लीं पुकार",
+    "artist": "सोनू निगम (Sonu Nigam)",
+    "language": "Hindi",
+    "category": "Hindi Devotional",
+    "album": "सूर्य आराधना",
+    "artwork": "/logo.svg",
+    "duration": 310,
+    "audioUrl": "https://archive.org/download/ho-deenanath/Ho-Deenanath.mp3",
+    "isFavorite": true,
+    "sourceNote": "भगवान भास्कर और छठी मैया की करुणामयी वंदना",
+    "lyrics": "जय छठी मईया, जय सुरुज देव, सुन लीं पुकार हमार..."
+  },
+  {
+    "id": "song-53",
+    "title": "छठी माई के बरतिया पावन",
+    "artist": "पलक मुच्छल (Palak Muchhal)",
+    "language": "Bhojpuri",
+    "category": "Chhathi Maiya",
+    "album": "मईया के आशीष",
+    "artwork": "/logo.svg",
+    "duration": 295,
+    "audioUrl": "https://archive.org/download/chaar-pahar-hum-jal-thal/Chaar%20Pahar%20Hum%20Jal%20Thal.mp3",
+    "isFavorite": true,
+    "sourceNote": "पलक मुच्छल के सुरों में ढली भक्तिमयी छठ आराधना",
+    "lyrics": "छठी माई के बरतिया पावन, सूप सजवले ठाढ़ी..."
+  },
+  {
+    "id": "song-54",
+    "title": "अरघ के बेर भईल सुरुज देव",
+    "artist": "पलक मुच्छल (Palak Muchhal)",
+    "language": "Bhojpuri",
+    "category": "Usha Arghya",
+    "album": "उषा अर्घ्य अमृत",
+    "artwork": "/logo.svg",
+    "duration": 320,
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Jore%20Jore%20Shupba.mp3",
+    "isFavorite": true,
+    "sourceNote": "उदित होते सूर्य देव को प्रातःकालीन अर्घ्य समर्पण",
+    "lyrics": "अरघ के बेर भईल सुरुज देव, पूरब में लाली छाई..."
   }
 ];
+
+export const INITIAL_SONGS: Song[] = RAW_SONGS.map(s => ({
+  ...s,
+  lyrics: FULL_SONG_LYRICS[s.id] || s.lyrics
+}));
 
 class AppDatabase {
   private get<T>(key: string, defaultVal: T): T {
@@ -1015,7 +1077,12 @@ class AppDatabase {
 
   // Festival Days
   getFestivalDays(): FestivalDay[] {
-    return this.get<FestivalDay[]>(STORAGE_KEYS.DAYS, INITIAL_DAYS);
+    const cached = this.get<FestivalDay[]>(STORAGE_KEYS.DAYS, []);
+    if (!cached || cached.length !== 4 || cached[0]?.date !== '2026-11-13') {
+      this.saveFestivalDays(INITIAL_DAYS);
+      return INITIAL_DAYS;
+    }
+    return cached;
   }
 
   saveFestivalDays(days: FestivalDay[]): void {
@@ -1120,17 +1187,23 @@ class AppDatabase {
 
   // Songs
   getSongs(): Song[] {
+    const SONGS_VERSION_KEY = 'chhath_parv_songs_ver_1_3_0';
+    const hasLatestLyrics = this.get<string>(SONGS_VERSION_KEY, '') === '1.3.0_full_lyrics_v2';
     const cached = this.get<Song[]>(STORAGE_KEYS.SONGS, []);
-    const needsRefresh = !cached || 
+    const needsRefresh = !hasLatestLyrics ||
+      !cached || 
       cached.length < INITIAL_SONGS.length || 
       cached.some(s => !s.audioUrl || s.audioUrl.includes('.wav')) || 
       cached[0]?.audioUrl !== 'audio/kaanche_hi_bansh.mp3' ||
-      cached[32]?.audioUrl !== INITIAL_SONGS[32]?.audioUrl;
+      cached[32]?.audioUrl !== INITIAL_SONGS[32]?.audioUrl ||
+      !cached[0]?.lyrics ||
+      cached[0].lyrics.length < 350;
 
     if (needsRefresh) {
       const imported = (cached || []).filter(s => s.isLocal);
       const combined = [...INITIAL_SONGS, ...imported];
       this.saveSongs(combined);
+      this.set(SONGS_VERSION_KEY, '1.3.0_full_lyrics_v2');
       return combined;
     }
     return cached;
