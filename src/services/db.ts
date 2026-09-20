@@ -290,7 +290,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठ महापर्व लोक धरोहर",
     "artwork": "/logo.svg",
     "duration": 320,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Kaanche-Hi-Bansh-Ke-Bahangiya.mp3",
     "isFavorite": true,
     "sourceNote": "छठ महापर्व का सर्वाधिक लोकप्रिय व प्रसिद्ध पारंपरिक लोकगीत",
     "lyrics": "काँच ही बाँस के बहँगिया, बहँगी लचकत जाए...\nबहँगी लचकत जाए!\nबात जे पूछेला बटोहिया, बहँगी केकरा के जाए?\nबहँगी केकरा के जाए...\n\nतू त आन्हर हउवे रे बटोहिया, बहँगी सुरुज देव के जाए।\nबहँगी छठी मईया के जाए...\n\nकाँच ही बाँस के दउरवा, दउरा लचकत जाए।\nदउरा घाटे पहुँचे जाए..."
@@ -304,7 +304,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठी मईया के वरदान",
     "artwork": "/logo.svg",
     "duration": 295,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Marbo-Re-Sugwa-Dhanush-Se.mp3",
     "isFavorite": true,
     "sourceNote": "पवित्र फल अर्पण एवं सुगवा प्रसंग का अमर लोकगीत",
     "lyrics": "केरवा जे फरेला घवद से, ओह पर सुगा मँडराय...\nओह पर सुगा मँडराय!\nमारबो रे सुगवा धनुख से, सुगा गिरे मुरझाय...\n\nसुगनी जे रोवे ले वियोग से, आदित होई ना सहाय।\nअमरूद जे फरेला घवद से, ओह पर सुगा मँडराय..."
@@ -318,7 +318,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "भोरवा अरघ विशेष",
     "artwork": "/logo.svg",
     "duration": 340,
-    "audioUrl": "audio/chhath_usha_arghya.wav",
+    "audioUrl": "https://archive.org/download/ugihen-suraj-gosaiyan-hey/Ugihen-Suraj-Gosaiyan-Hey.mp3",
     "isFavorite": true,
     "sourceNote": "उदीयमान भगवान भास्कर को प्रातः अर्घ्य अर्पण गीत",
     "lyrics": "उग हे सुरुज देव भेल अरघ के बेर...\nभेल अरघ के बेर!\nअंगना में ठाढ़े सेविका, अरघिया के बेर...\n\nपूरब से उगेले सुरुजमल, लाल भईल संसार।\nदर्शन दीहीं हे दीनानाथ, मिटा दीहीं अंधकार..."
@@ -332,7 +332,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "दउरा सजाय के",
     "artwork": "/logo.svg",
     "duration": 280,
-    "audioUrl": "audio/chhath_sandhya_arghya.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Jore%20Jore%20Shupba.mp3",
     "isFavorite": true,
     "sourceNote": "अस्ताचलगामी सूर्य देव को सूप अर्पण का पावन भजन",
     "lyrics": "जोड़े जोड़े फलवा सुरुज देव, सूपवा चढ़ाईं हम...\nसूपवा चढ़ाईं हम!\nघटवा पे ठाढ़ होके सुरुजमल, तोहार गुण गाईं हम...\n\nनारियर, केलवा, डाभ निम्बुआ, सब सूप में धराईं।\nसँझिया अरघिया में दीनानाथ के ध्यान लगाईं..."
@@ -346,7 +346,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "आस्था के दीप",
     "artwork": "/logo.svg",
     "duration": 360,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Ke-Kaili-Chhath-Brath-Ke-Arag-De-Te-Jaai.mp3",
     "isFavorite": true,
     "sourceNote": "प्रथम बार छठ व्रत करने वाले व्रतियों की आत्मीय भावना",
     "lyrics": "पहिले पहिल हम कईनी, छठी मईया व्रत तोहार...\nछठी मईया व्रत तोहार!\nकरिहा क्षमा छठी मईया, भूल-चूक गलती हमार...\n\nमाटी के चूल्हवा पे खीर हम बनइली।\nरसियाव के परसादी मईया तोहरा चढ़वली..."
@@ -360,7 +360,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "गंगा तीरे छठ",
     "artwork": "/logo.svg",
     "duration": 310,
-    "audioUrl": "audio/chhath_ghat_procession.wav",
+    "audioUrl": "https://archive.org/download/ho-deenanath/Ho-Deenanath.mp3",
     "isFavorite": false,
     "sourceNote": "गंगा तट पर छठ पर्व की भव्यता का सजीव वर्णन",
     "lyrics": "पटना के घटिया पर हमहूं अरघिया देब...\nहमहूं अरघिया देब!\nछठी मईया के पावन चरनिया शीश नवाएब...\n\nलाखों दीप जले गंगा किनारे, गूँजे जय जयकार।\nसुरुज देव के किरिन बिखरे, निर्मल गंगा धार..."
@@ -374,7 +374,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "सुगवा के बियोग",
     "artwork": "/logo.svg",
     "duration": 335,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/kelva-ke-paat-par/Kelva%20Ke%20Paat%20Par.mp3",
     "isFavorite": false,
     "sourceNote": "छठ के प्रसाद की शुचिता एवं पवित्रता से जुड़ा लोकगीत",
     "lyrics": "मारबो रे सुगवा धनुष से, सुगा गिरे मुरझाय...\nउहे सुगवा जे जूठ कईले फलवा, आदित ना सहाय!\n\nसुगनी रोवे ले डाढ़ पर ठाढ़ी, कइसे छठ बरतिया होइहें?\nछठी मईया से विनती बा, सब फल शुद्ध कराईं..."
@@ -388,7 +388,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "आदित्य स्तुति",
     "artwork": "/logo.svg",
     "duration": 275,
-    "audioUrl": "audio/chhath_surya_stuti.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Char-Pahar-Ham-Jal-Sewela.mp3",
     "isFavorite": false,
     "sourceNote": "समस्त कष्टों के निवारण हेतु सूर्य भगवान की करुणामयी प्रार्थना",
     "lyrics": "हो दीनानाथ, सुन लीं अरज हमार...\nसुन लीं अरज हमार!\nदीन-दुखी के दाता तुहीं, जग के पालनहार...\n\nतेज तिहारो त्रिभुवन चमके, तुमहिं ज्ञान प्रकाश।\nहम बालक शरण तिहारी, पूरी करहु आस..."
@@ -402,7 +402,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "मिथिला छठि सोहावन",
     "artwork": "/logo.svg",
     "duration": 315,
-    "audioUrl": "audio/chhath_maithili_bhajan.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Patna%20ke%20Ghatba.mp3",
     "isFavorite": true,
     "sourceNote": "मिथिलांचल का हृदयस्पर्शी चार पहर रात की आराधना का गीत",
     "lyrics": "चारि पहर राती जल थल सेवा ला...\nजल थल सेवा ला!\nसुरुज देव के दर्शन ला व्रती जल में ठाढ़ भेल...\n\nअंगना में कूस के पाटी बिछओल, अरघ सूप सजओल।\nहे छठी मईया दया करू, मिथिला के पावन पर्व..."
@@ -416,7 +416,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "वरदान मईया के",
     "artwork": "/logo.svg",
     "duration": 290,
-    "audioUrl": "audio/chhath_aarti_vandana.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Gohre-Khadauwan-A-Aditmal.mp3",
     "isFavorite": false,
     "sourceNote": "संतान, कुल एवं परिवार की सुख-शांति का मंगल वरदान",
     "lyrics": "छठी मईया दिहीं आशीष, घर-घर मंगल होय...\nघर-घर मंगल होय!\nजो नर-नारी व्रत करे, दुःख ना पावे कोय...\n\nअखंड सोहाग दिहीं मईया, संतान के सुख दीहीं।\nअन्न-धन के भंडार भरे, सब मनोरथ पूरा कीहीं..."
@@ -430,7 +430,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "प्रातः अर्घ्य गान",
     "artwork": "/logo.svg",
     "duration": 310,
-    "audioUrl": "audio/chhath_usha_arghya.wav",
+    "audioUrl": "https://archive.org/download/uthau-surooj-bhaile-bihaan/Uthau%20Surooj%20Bhaile%20Bihaan.mp3",
     "isFavorite": true,
     "sourceNote": "प्रातः काल सूर्य की किरणों का केले के पत्तों पर स्वर्णिम दृश्य",
     "lyrics": "केलवा के पात पर उगेलन सुरुज देव, झाँके-झुके...\nझाँके-झुके!\nअमल कमल दल फूल खिले, पूरब लाली झुके...\n\nव्रती ठाढ़े गंगा तीरे, लोटा दूध लिए हाथ।\nअरघ देबे सुरुज देव के, पूरी भईल छठि रात..."
@@ -444,7 +444,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "भोजपुर छठ मेला",
     "artwork": "/logo.svg",
     "duration": 265,
-    "audioUrl": "audio/chhath_ghat_procession.wav",
+    "audioUrl": "https://archive.org/download/baanjhi-kewdwa-dhaile-thaadh/Baanjhi%20Kewdwa%20Dhaile%20Thaadh.mp3",
     "isFavorite": true,
     "sourceNote": "भोजपुर क्षेत्र के घाटों पर उमड़े जनसैलाब और भक्ति की उमंग",
     "lyrics": "आरा के घटिया पे लागल बा भीड़, सजल बा दउरवा अपार...\nबाजे शहनाई नगाड़ा, गूँजे छठी माई जयकार!\n\nसभका माथे पीला सिन्दूर, सूप सजल बा भारी।\nपवन भईया अरघिया देले, भक्ति भईल मतवारी..."
@@ -458,7 +458,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "अरघ के बेरा",
     "artwork": "/logo.svg",
     "duration": 325,
-    "audioUrl": "audio/chhath_usha_arghya.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Ghatwa-Ke-Aari-Aari.mp3",
     "isFavorite": false,
     "sourceNote": "भोर की ठंडक में जल में खड़े व्रतियों द्वारा सूर्य देव का आवाहन",
     "lyrics": "उगीं हे दीनानाथ, अरघ के बेरिया भईल...\nअरघ के बेरिया भईल!\nकमर भर पनिया में ठाढ़े भईल सेविका...\n\nशीत लहरे शरीर काँपे, मन में भक्ति अपार।\nअब त दरस देखावा सुरुजमल, होखे पारन के संभार..."
@@ -472,7 +472,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठी मईया के द्वारे",
     "artwork": "/logo.svg",
     "duration": 290,
-    "audioUrl": "audio/chhath_sandhya_arghya.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Sone-Ke-Khadauwa-He-Dinanath.mp3",
     "isFavorite": true,
     "sourceNote": "भगवान भास्कर से दर्शन देने की भावुक प्रार्थना",
     "lyrics": "दरस देखाईं हे सुरुज देव, अँजुरी भरल बा दूध से...\nहाथ जोड़ी ठाढ़ बानी, विनती करेनी मन से!\n\nसूरज बाबा किरिन बिखेरा, घाट भईल गुलजार।\nछठी माई के चरनिया में झुकल बा संसार..."
@@ -486,7 +486,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठ के बरबस याद",
     "artwork": "/logo.svg",
     "duration": 340,
-    "audioUrl": "audio/chhath_aarti_vandana.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Aradh%20Le%20La.mp3",
     "isFavorite": true,
     "sourceNote": "लोक आस्था और मातृत्व की देवी छठी मैया की पुकार",
     "lyrics": "छठी मईया सुन लीं पुकार, हमनी के संकट टारीं...\nदुःख-दारिद्र सब दूर बहाईं, सुख के दीप उजारीं!\n\nसिर पर दउरा उठाई के अइली, घाटे लागल बा मेला।\nमईया के कृपा से सफल भईल छठ बरतिया के बेला..."
@@ -500,7 +500,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "घाटे चलो सजनी",
     "artwork": "/logo.svg",
     "duration": 275,
-    "audioUrl": "audio/chhath_ghat_procession.wav",
+    "audioUrl": "https://archive.org/download/hey-chhatthi-maiya/Hey-Chhatthi-Maiya.mp3",
     "isFavorite": false,
     "sourceNote": "परिवार के युवा सदस्यों द्वारा सिर पर दउरा उठाने की परंपरा",
     "lyrics": "दउरा उठाईं कान्हा, अरघिया के बेरा भईल...\nसँझिया के बेर भईल!\nमाई के सँगवा चलीं सब भाई, घटवा सजल सुंदर...\n\nबाँस के बहँगी सूप सजवले, ठेकुआ के महक सुवास।\nछठी मईया के दर्शन से मन में जगे उल्लास..."
@@ -514,7 +514,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "प्राचीन छठ संपदा",
     "artwork": "/logo.svg",
     "duration": 330,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Hathwa-Mein-Fulwa-Dallaiya.mp3",
     "isFavorite": false,
     "sourceNote": "सूर्य देव के विभिन्न घरों में जाने का प्राचीन रूपक लोकगीत",
     "lyrics": "सुरुज बाबा अहिरन घरे जइहें, धेनु चराई ले अइहें...\nदूध-दही के भोग लगइहें, छठी माई के रीझइहें!\n\nसबके घरे उजेला फैले, मिटे अविद्या-अंधकार।\nसुरुज देव के किरपा से धन्य भईल संसार..."
@@ -528,7 +528,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "मिथिला लोक संस्कृति",
     "artwork": "/logo.svg",
     "duration": 305,
-    "audioUrl": "audio/chhath_maithili_bhajan.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Daura%20Uthawa%20Na.mp3",
     "isFavorite": false,
     "sourceNote": "छठ और सामा-चकेवा पर्व के मधुर संगम का मैथिली गीत",
     "lyrics": "सामा चकेवा आवेली छठी घाटे, भैया के दीघायु वरदान...\nछठी मईया सुनती पुकार, मिथिला के पावन सान!\n\nमाटी के मूर्ति सजायल, दीप जराओल घाट।\nभोरवा अरघिया में सुरुज देव देखलनि पावन बाट..."
@@ -542,7 +542,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "मईया के आगमन",
     "artwork": "/logo.svg",
     "duration": 290,
-    "audioUrl": "audio/chhath_aarti_vandana.wav",
+    "audioUrl": "https://archive.org/download/chaar-pahar-hum-jal-thal/Chaar%20Pahar%20Hum%20Jal%20Thal.mp3",
     "isFavorite": true,
     "sourceNote": "छठी मैया के सूर्य रथ पर सवार होकर घाट पर पधारने का गान",
     "lyrics": "घाटे चहुँपल छठी मईया के रथ, बाजे शंख-निशान...\nभक्तन के मन पुलकित भईल, पाके मईया के वरदान!\n\nसात घोड़ा के रथ पर साजे, सूरज देव भगवान।\nछठी मईया के दर्शन से धन्य भईल जहान..."
@@ -556,7 +556,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "सूपवा सजल बा",
     "artwork": "/logo.svg",
     "duration": 280,
-    "audioUrl": "audio/chhath_ghat_procession.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Chatti%20Maiya.mp3",
     "isFavorite": false,
     "sourceNote": "सूप में 36 प्रकार के फल व प्रसाद सजाने का सामूहिक लोकगीत",
     "lyrics": "सभे सूप सजाईं सुरुज देव के, पान-सुपाड़ी फूल...\nधूप-दीप और अगरबत्ती, मिटे जन्म के शूल!\n\nठेकुआ, खजूर, सिंघाड़ा, मूली, अदरक हरी अपार।\nछठी मईया के चरणों में अर्पित सारा संसार..."
@@ -570,7 +570,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "मधुर छठ धुन",
     "artwork": "/logo.svg",
     "duration": 315,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Mahima-Baa-Agam-Apaar.mp3",
     "isFavorite": true,
     "sourceNote": "छठी मैया के नूपुरों की मधुर झंकार और आगमन",
     "lyrics": "रुनिझुनि बाजे पाजनिया सुरुज देव, मईया आवें घाट...\nसुवर्ण कलश जल भरी राखल, निर्मल गंगा बाट!\n\nआदित्य देव के किरन चमके, भईल सवेरा भोर।\nसब नर-नारी जयकार लगावें, गूँजे चारु ओर..."
@@ -584,7 +584,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "सँझिया अरघिया",
     "artwork": "/logo.svg",
     "duration": 285,
-    "audioUrl": "audio/chhath_sandhya_arghya.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Tohre%20Aas%20Me.mp3",
     "isFavorite": false,
     "sourceNote": "संध्या बेला में डूबते सूर्य को अर्घ्य समर्पण",
     "lyrics": "अरघ के बेर भईल सुरुज देव, जल में ठाढ़े व्रती...\nदूध-जल के धार गिरावे, पावन भईल ये मति!\n\nसँझिया के बेरा डूबत सुरुज के करेनी नमन।\nकल भोर में फेर दर्शन दिहीं, धन्य होई जीवन..."
@@ -598,7 +598,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "महिमा अपार",
     "artwork": "/logo.svg",
     "duration": 300,
-    "audioUrl": "audio/chhath_aarti_vandana.wav",
+    "audioUrl": "https://archive.org/download/chhathi-maiya-bulaye/CHHATHI%20MAIYA%20BULAYE%20.mp3",
     "isFavorite": true,
     "sourceNote": "छठी मैया के अलौकिक चमत्कारों एवं मातृत्व का गुणगान",
     "lyrics": "हे छठी मईया तोहर महिमा अपार, निर्धन के धन देलू...\nअन्हरा के आँख देलू, बांझिन के गोदी भर देलू!\n\nजे तोहार व्रत करे नेम-निष्ठा से, सब संकट हर लेलू।\nसदा सुहागिन रहे व्रती, अमर सोहाग वर देलू..."
@@ -612,7 +612,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "गंगा तट छठ",
     "artwork": "/logo.svg",
     "duration": 330,
-    "audioUrl": "audio/chhath_ghat_procession.wav",
+    "audioUrl": "https://archive.org/download/hey-ganga-maiya/Hey%20Ganga%20Maiya.mp3",
     "isFavorite": false,
     "sourceNote": "गंगा किनारे दीयों की लड़ियों और दउरों की छटा",
     "lyrics": "गंगाजी के पावन तीरे सजल बा दउरवा, जगमगात बा घाट...\nहजारों दीया टिमटिमावे, सुरुज देव के बाट!\n\nहर हर गंगे, जय छठी मईया, गूँजे पावन नाद।\nव्रती के कठिन तपस्या से मिले महाप्रसाद..."
@@ -626,7 +626,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "लोक मानस छठ",
     "artwork": "/logo.svg",
     "duration": 320,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/penhle-mahadev-piyariya/Penhle%20Mahadev%20Piyariya.mp3",
     "isFavorite": false,
     "sourceNote": "डाभ नींबू के पौधे पर सुग्गा का पारंपरिक संवाद",
     "lyrics": "सुगना बोलेला डाभे निम्बुआ पे, ई फल केकरा के जाए?\nछठी मईया के परसादी बा, सुगना मत जूठियाए!\n\nशुद्ध मन से फल तोड़ीं, सूप में धरीं सजाय।\nसुरुज देव के अर्पण होई, कुल के मंगल थाय..."
@@ -640,7 +640,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठ के पावन दिन",
     "artwork": "/logo.svg",
     "duration": 295,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Ugo%20Ho%20Uraj.mp3",
     "isFavorite": false,
     "sourceNote": "बांस की बहँगी कंधे पर लेकर घाट की ओर जाने का भावुक गान",
     "lyrics": "बहँगी लचकत जाए सुरुज देव के, पाँव पड़े डगमग...\nमन में छठी मईया के मूरत, जगमगाए मग-मग!\n\nघाटे पहुँच के दउरा उतारीं, सूप सजाईं चार।\nछठी मईया के आशीष से संवरे सब संसार..."
@@ -654,7 +654,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "आदित्य हृदय गान",
     "artwork": "/logo.svg",
     "duration": 350,
-    "audioUrl": "audio/chhath_surya_stuti.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Callu%20Challu.mp3",
     "isFavorite": true,
     "sourceNote": "वेदोक्त मंत्रों एवं सूर्य उपासना का पावन स्तुति गान",
     "lyrics": "उदित भये भगवान भाष्कर, तम सब दूर बहायो...\nस्वर्ण किरण की आभा लेकर, नव-जीवन प्रगटायो!\n\nॐ आदित्याय नमः, ॐ रवये नमः, ॐ भास्कराय नमः।\nछठ महापर्व पर हे भुवनपति, स्वीकारें अर्घ्य हमारा..."
@@ -668,7 +668,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "खरना के महाप्रसाद",
     "artwork": "/logo.svg",
     "duration": 280,
-    "audioUrl": "audio/chhath_kharna_meditation.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Sainya%20Laika.mp3",
     "isFavorite": true,
     "sourceNote": "खरना के दिन मिट्टी के चूल्हे पर गुड़ की खीर बनाने की विधि व भाव",
     "lyrics": "माटी के चूल्हा पे बने रसियाव, आम के काठी आगि...\nअरवा चउर गुड़ दूध में पके, पवित्र भावना जागी!\n\nघी चुपड़ी रोटी के सँगवा, केले के पात भोग लगावें।\nएकांत शांत मन से व्रती, छठी मईया के ध्यावें..."
@@ -682,7 +682,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "लोक रीति छठ",
     "artwork": "/logo.svg",
     "duration": 305,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Ghat%20Par%20Narial.mp3",
     "isFavorite": false,
     "sourceNote": "घाट की सफाई एवं बहँगी धोने की प्राचीन परंपरा",
     "lyrics": "धोवहु रे बहँगी घाट पहुँचावहु, गंगा जल छिड़कवावहु...\nमाटी के वेदी दीप जलाय के, चुनरी लाल चढ़ावहु!\n\nसबके हृदय में भक्ति जागे, मिटे भेदभाव के क्लेश।\nछठी मईया के पावन परब में धन्य भईल हमरो देश..."
@@ -696,7 +696,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "रथवा सुरुजमल के",
     "artwork": "/logo.svg",
     "duration": 270,
-    "audioUrl": "audio/chhath_ghat_procession.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Darshan%20Dihi%20Bhore.mp3",
     "isFavorite": false,
     "sourceNote": "भगवान सूर्य के सात घोड़ों के स्वर्णिम रथ का उल्लासपूर्ण गान",
     "lyrics": "सुरुज देव के रथवा सजल चारु ओर, सात घोड़ा चमकेला...\nअरुण देव हाँकेला रथा, पूरब लाली दमकेला!\n\nअर्घ्य देईं दूध-गंगाजल से, हाथ जोड़ शीश झुकाईं।\nपवन भईया गावें मंगल, छठी माई के रीझाईं..."
@@ -710,7 +710,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "बरतिया के नेह",
     "artwork": "/logo.svg",
     "duration": 315,
-    "audioUrl": "audio/chhath_aarti_vandana.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Maiya%20Ke%20Brat.mp3",
     "isFavorite": false,
     "sourceNote": "36 घंटे निर्जला व्रत रखने वाली व्रतियों की तपस्या",
     "lyrics": "छठी मईया के पावन बरतिया, धन्य बा माई के तप...\nबिना अन्न-जल तीन दिन ठाढ़ी, जपे निरंतर जप!\n\nघर-परिवार के संकट काटे, संतान के देईं लंबी उमरिया।\nछठी मईया के चरन शरण में सफल भईल जिनगिया..."
@@ -724,7 +724,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "ममतामयी छठ",
     "artwork": "/logo.svg",
     "duration": 335,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Chhath%20Geet.mp3",
     "isFavorite": true,
     "sourceNote": "संतान की दीर्घायु और कल्याण के लिए मां की तपस्या",
     "lyrics": "ललनवा खातिर माई करेली छठ बरत, आँचर पसारि माँगे भीख...\nहे छठी मईया ललन जुग जिए, दीहीं सुबुद्धि सुसीख!\n\nगोदी में खेले बालक सुंदर, कुल के नाम बढ़ावे।\nमाई के तपस्या से सुरुज देव, घर में सुख बरसावे..."
@@ -738,7 +738,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "डलिया सजल बा",
     "artwork": "/logo.svg",
     "duration": 290,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/ugihen-suraj-gosaiyan-hey/Ugihen-Suraj-Gosaiyan-Hey.mp3",
     "isFavorite": false,
     "sourceNote": "बांस की डलिया में फल व पूजन सामग्री सजाने का गीत",
     "lyrics": "काँच ही बाँस के डलिया सजाय के, चलली व्रती घाट...\nगंगा मइया के तीरे बिछल बा, कंचन-वरन के पाट!\n\nसूप में नारियल, सेब, सिंघाड़ा, सुथनी कंदा भारी।\nछठी माई के दर्शन पाके, धन्य भईल संसारी..."
@@ -752,7 +752,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "उषा वंदना",
     "artwork": "/logo.svg",
     "duration": 310,
-    "audioUrl": "audio/chhath_usha_arghya.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Chhaith%20Paavain.mp3",
     "isFavorite": false,
     "sourceNote": "भोर के समय सूर्य की प्रथम किरण के दर्शन और अर्घ्य",
     "lyrics": "उषा बेला में अर्घ्य समर्पण, हे दिवाकर नमन तिहारे...\nशीतल जल में खड़े तपस्वी, केवल तेरे सहारे!\n\nअरुणोदय से जगमग धरती, नव-चेतना का विस्तार।\nछठी मईया संग सूर्य विराजे, जय जयकार अपार..."
@@ -766,7 +766,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "कोसी भराई विशेष",
     "artwork": "/logo.svg",
     "duration": 340,
-    "audioUrl": "audio/chhath_sandhya_arghya.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Narial%20Baje.mp3",
     "isFavorite": true,
     "sourceNote": "मन्नत पूर्ण होने पर गन्ने के मंडप में कोसी भरने का पावन अनुष्ठान",
     "lyrics": "अंगना में कोसी भराईब हे छठी मईया, गन्ना के मंडप छाईब...\nचौबीस दीया माटी के सजीहें, मंगल सोहर गाईब!\n\nहाथी सजल माटी के सुंदर, कलश धरल बा भारी।\nकोसी भरन से मन्नत पूरे, प्रसन्न होय महतारी..."
@@ -780,7 +780,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "आगमन सूर्य देव",
     "artwork": "/logo.svg",
     "duration": 320,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/ghatwa-ke-aari-aari/Ghatwa_Ke_Aari_Aari.mp3",
     "isFavorite": false,
     "sourceNote": "सूर्य भगवान के आंगन में पधारने का आत्मीय लोकगीत",
     "lyrics": "सुरुजमल आवेलन आज हमार अँगना, कंचन थाल सजाईं...\nगंगाजल से चरण पखारीं, चंदन तिलक लगाईं!\n\nपूरब से उदित भये दीनानाथ, जगमग भईल दुवार।\nछठी मईया के सँगवा अइले, धन्य भईल परिवार..."
@@ -794,7 +794,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठ वाद्य वृंद",
     "artwork": "/logo.svg",
     "duration": 290,
-    "audioUrl": "audio/chhath_sandhya_arghya.wav",
+    "audioUrl": "https://archive.org/download/chanani-taane-chalale/Chanani%20Taane%20Chalale.mp3",
     "isFavorite": false,
     "sourceNote": "गंगा घाट पर गूँजती पारंपरिक शहनाई, शंख व नगाड़े की मंगल धुन",
     "lyrics": "♪ (पारंपरिक शहनाई एवं नगाड़ा मंगल वादन) ♪\n\nगंगा तीरे भोर और सांझ में बजने वाली पावन शहनाई की मंगल धुन।\nछठी मैया के आगमन पर बजने वाले दिव्य मंगल वाद्य।"
@@ -808,7 +808,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "अरघिया के जल",
     "artwork": "/logo.svg",
     "duration": 280,
-    "audioUrl": "audio/chhath_sandhya_arghya.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Je%20Karelagu%20Chhat.mp3",
     "isFavorite": false,
     "sourceNote": "तांबे के लोटे में गंगाजल भरकर सूर्य को अर्पित करने का भाव",
     "lyrics": "गंगा जल भरी लोटा, अरघिया हम देब...\nछठी मईया के चरन पखारब, ध्यान मगन होय जेब!\n\nपीतल कलश में दूध सजावल, लाल चुनरिया ओढ़ी।\nपवन सिंह गावें भक्ति से, हाथ दुनो हम जोड़ी..."
@@ -822,7 +822,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "संध्या स्तुति",
     "artwork": "/logo.svg",
     "duration": 315,
-    "audioUrl": "audio/chhath_sandhya_arghya.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Mai%20He%20Babuji%20Kahas.mp3",
     "isFavorite": false,
     "sourceNote": "डूबते सूर्य के प्रति आभार और कृतज्ञता का शास्त्रीय भजन",
     "lyrics": "अस्ताचल गामी हे सूर्य दिवाकर, शत-शत तुम्हें प्रणाम...\nदिनभर जग को प्राण दिए, विश्राम का यह आयाम!\n\nसंध्या बेला में अर्घ्य समर्पि, मांग रहे आशीष।\nपुनः प्रभात में दर्शन देना, झुका रहे निज शीश..."
@@ -836,7 +836,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "प्रभात स्तुति",
     "artwork": "/logo.svg",
     "duration": 325,
-    "audioUrl": "audio/chhath_usha_arghya.wav",
+    "audioUrl": "https://archive.org/download/kartik-maas-ijoriya/KARTIK%20MAAS%20IJORIYA.mp3",
     "isFavorite": false,
     "sourceNote": "प्रातः काल नई आशा और आरोग्य के प्रदाता भगवान भास्कर की स्तुति",
     "lyrics": "अरुणोदय की दिव्य छटा, पूर्व दिशा मुस्काई...\nअंधकार का नाश हुआ, नई किरण लहराई!\n\nउषा अर्घ्य से पूर्ण हुआ व्रत, बंटी प्रसाद की धार।\nछठी मैया की कृपा से संवरा यह संसार..."
@@ -850,7 +850,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "मिथिला सोहाग गान",
     "artwork": "/logo.svg",
     "duration": 300,
-    "audioUrl": "audio/chhath_maithili_bhajan.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Mora-Bhaiya-Jaiye-La.mp3",
     "isFavorite": false,
     "sourceNote": "अखंड सौभाग्य और संतान सुख के लिए मैथिल ललनाओं का गीत",
     "lyrics": "छठी माई के अमर सोहाग, सिन्दूर माथे चमके...\nपीत वसन पहिरि व्रती, गंगा घाटे दमके!\n\nसूप में मखान, केरा, पान, मखानक माला साजे।\nछठि माईक किरपा सँ कुलक मान विराजे..."
@@ -864,7 +864,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "नइहर ससुरार छठ",
     "artwork": "/logo.svg",
     "duration": 290,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Maiya%20Aili.mp3",
     "isFavorite": false,
     "sourceNote": "मायके और ससुराल दोनों में छठ पर्व की उमंग और दउरा की सजीवता",
     "lyrics": "दउरा लचके नइहर से ससुरार, सब सखी मिलि गावें...\nछठी मईया के महिमा अपार, घाटे दीप जलावें!\n\nभईया दउरा उठाए माथे, भौजी सूप सजावें।\nसुरुज देव के किरपा से घर-आँगन महकावें..."
@@ -878,7 +878,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "दीर्घायु वरदान",
     "artwork": "/logo.svg",
     "duration": 330,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Kopi-Kopi-Bol-Ke-Suruj-Dev.mp3",
     "isFavorite": true,
     "sourceNote": "पुत्र व पुत्री की दीर्घायु और निरोगी काया की पावन प्रार्थना",
     "lyrics": "सुरुज बाबा देईं संतान के दीर्घायु, निरोगी काया दीहीं...\nहाथ जोड़ी ठाढ़ बानी, विनती स्वीकार करीं!\n\nछठी मईया अँचरा में भर दीहीं खुशहाली।\nकबहूँ ना खाली जाए मईया तोहरी थाली..."
@@ -892,7 +892,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "प्रथम दिवस नहाय-खाय",
     "artwork": "/logo.svg",
     "duration": 280,
-    "audioUrl": "audio/chhath_kharna_meditation.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Bhorbe%20Me%20Nadia.mp3",
     "isFavorite": false,
     "sourceNote": "प्रथम दिन नहाय-खाय की शुचिता, कद्दू-भात और सात्विक संकल्प",
     "lyrics": "पवित्र नहाय-खाय कद्दू-भात, चने के दाल सुहावन...\nसेंधा नमक अरवा चावल से, तन-मन भईल पावन!\n\nगंगा स्नान करी व्रती, सात्विक भोजन पाए।\nचार दिन के महापर्व में शुद्धि के दीप जलाए..."
@@ -906,7 +906,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "खरना महाप्रसाद",
     "artwork": "/logo.svg",
     "duration": 295,
-    "audioUrl": "audio/chhath_kharna_meditation.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Chhaith%20Paavain.mp3",
     "isFavorite": true,
     "sourceNote": "खरना के दिन रसियाव-रोटी प्रसाद का वितरण एवं निर्जला व्रत आरंभ",
     "lyrics": "खरना के पावन बेला, रसियाव महाप्रसाद...\nगुड़-दूध के खीर बने, मिटे सब अवसाद!\n\nव्रती भोजन पाके अब 36 घंटा निर्जला रहीं।\nछठी माई के शक्ति से कठिन साधना सहीहें..."
@@ -920,7 +920,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "दीप ज्योति छठ",
     "artwork": "/logo.svg",
     "duration": 285,
-    "audioUrl": "audio/chhath_aarti_vandana.wav",
+    "audioUrl": "https://archive.org/download/marboresugwadhanushse/Kartik-Mash-Eho-Punit-Mahinawa.mp3",
     "isFavorite": false,
     "sourceNote": "बांस के सूप पर घी का चौमुखी दीया प्रज्ज्वलित करने का भजन",
     "lyrics": "सूपवा में दीप जलाय के, जल में अर्पण कीन्ह...\nछठी मईया दर्शन दीन्हीं, दुःख दरिद्र सब लीन्ह!\n\nझिलमिल-झिलमिल ज्योति चमके, गंगा जल लहराए।\nसुरुज देव के नमन से हर मनोकामना पाए..."
@@ -934,7 +934,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "तुलसी चउरा छठ",
     "artwork": "/logo.svg",
     "duration": 310,
-    "audioUrl": "audio/chhath_folk_tradition.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Chhathi%20Maiya.mp3",
     "isFavorite": false,
     "sourceNote": "तुलसी चौरा के समक्ष व्रत का संकल्प और मंगल गीतों का गायन",
     "lyrics": "अंगना में तुलसी चउरा सजल बा, जल ढारे सुहागिन नारी...\nछठी मईया के व्रत ठाने, भक्ति में बलिहारी!\n\nगीत गावे सब मिलजुल के, बाजे मंजीरा ढोल।\nछठ महापर्व के दिन में बोले अमृत बोल..."
@@ -948,7 +948,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठ महाआरती",
     "artwork": "/logo.svg",
     "duration": 345,
-    "audioUrl": "audio/chhath_aarti_vandana.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Lami%20Lami%20Unkhiya.mp3",
     "isFavorite": true,
     "sourceNote": "छठ पर्व की महाआरती जिसे अर्घ्य के बाद संपूर्ण घाट पर गाया जाता है",
     "lyrics": "जय जय हे सूर्य दिवाकर, जय जय छठी मईया...\nभवसागर से पार लगावे, तोहरी पावन नैया!\n\nकंचन थार कपूर की बाती, आरती करें नर-नारी।\nसकल मनोरथ सिद्ध करें, हे मंगलकारी महतारी..."
@@ -962,7 +962,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "दर्शन दीनानाथ",
     "artwork": "/logo.svg",
     "duration": 290,
-    "audioUrl": "audio/chhath_ghat_procession.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/Kounche%20Hi%20Pass.mp3",
     "isFavorite": false,
     "sourceNote": "घाट पर सूर्योदय के दर्शन की आतुरता और उल्लास",
     "lyrics": "हे दीनानाथ, दीहीं दर्शन घाट पे, भोर भईल उजियार...\nलाली बिखरी पूर्व दिशा में, गूँजे जय-जयकार!\n\nखेसारी गावे भाव से, माई के पावन गान।\nछठी मईया के आशीष से सफल भईल परमान..."
@@ -976,7 +976,7 @@ export const INITIAL_SONGS: Song[] = [
     "album": "छठ महामंगल",
     "artwork": "/logo.svg",
     "duration": 360,
-    "audioUrl": "audio/chhath_surya_stuti.wav",
+    "audioUrl": "https://archive.org/download/maithilichathsongs/More%20He%20Sainya.mp3",
     "isFavorite": true,
     "sourceNote": "पारण के उपरांत संपूर्ण परिवार व समाज के कल्याण का महामंगल गान",
     "lyrics": "छठ मईया के आशीष सब परिवार पर, बरसे अमृत धार...\nसुख, शांति, आरोग्य मिले, बढ़े प्रेम-संसार!\n\nपारण कईले व्रती माता, पूर्ण भईल अनुष्ठान।\nछठी माई और सूर्य देव के चरणों में शत-शत प्रणाम..."
@@ -1121,7 +1121,7 @@ class AppDatabase {
   // Songs
   getSongs(): Song[] {
     const cached = this.get<Song[]>(STORAGE_KEYS.SONGS, []);
-    if (!cached || cached.length < INITIAL_SONGS.length || cached.some(s => !s.audioUrl || s.audioUrl === '')) {
+    if (!cached || cached.length < INITIAL_SONGS.length || cached.some(s => !s.audioUrl || s.audioUrl === '' || s.audioUrl.includes('.wav'))) {
       const imported = (cached || []).filter(s => s.isLocal);
       const combined = [...INITIAL_SONGS, ...imported];
       this.saveSongs(combined);

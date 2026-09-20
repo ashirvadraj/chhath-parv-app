@@ -5,6 +5,7 @@ import { db } from '../services/db';
 interface AudioContextType {
   currentSong: Song | null;
   isPlaying: boolean;
+  isLoading: boolean;
   currentTime: number;
   duration: number;
   volume: number;
@@ -31,85 +32,10 @@ interface AudioContextType {
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
-// Web Audio Multi-voice Tanpura & Bansuri synthesizer fallback (audible & meditative)
-class DevotionalSoundSynth {
-  private ctx: AudioContext | null = null;
-  private nodes: OscillatorNode[] = [];
-  private gain: GainNode | null = null;
-  private isRunning: boolean = false;
-
-  public init() {
-    if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioCtx) this.ctx = new AudioCtx();
-    }
-  }
-
-  play() {
-    try {
-      this.init();
-      if (!this.ctx) return;
-      if (this.ctx.state === 'suspended') {
-        this.ctx.resume();
-      }
-      if (this.isRunning) return;
-
-      this.stop(); // Clear any existing nodes
-
-      const now = this.ctx.currentTime;
-      this.gain = this.ctx.createGain();
-      // Audible volume: 0.35 (clearly heard on phone speakers)
-      this.gain.gain.setValueAtTime(0.01, now);
-      this.gain.gain.exponentialRampToValueAtTime(0.35, now + 1.2);
-      this.gain.connect(this.ctx.destination);
-
-      // Tanpura 4-string harmony (Pa=196Hz, Sa=261.63Hz, Sa=261.63Hz, Sa=130.81Hz)
-      const freqs = [196.0, 261.63, 261.63, 130.81];
-      freqs.forEach((freq, idx) => {
-        if (!this.ctx || !this.gain) return;
-        const osc = this.ctx.createOscillator();
-        const strGain = this.ctx.createGain();
-        osc.type = idx === 0 ? 'sine' : idx === 3 ? 'triangle' : 'sine';
-        osc.frequency.setValueAtTime(freq, now);
-
-        strGain.gain.setValueAtTime(0.2, now);
-        osc.connect(strGain);
-        strGain.connect(this.gain);
-        osc.start(now);
-        this.nodes.push(osc);
-      });
-
-      this.isRunning = true;
-    } catch (e) {
-      console.warn('Devotional synth start error:', e);
-    }
-  }
-
-  stop() {
-    try {
-      if (this.gain && this.ctx) {
-        this.gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.3);
-      }
-      setTimeout(() => {
-        this.nodes.forEach((n) => {
-          try {
-            n.stop();
-            n.disconnect();
-          } catch {}
-        });
-        this.nodes = [];
-        this.isRunning = false;
-      }, 350);
-    } catch {}
-  }
-}
-
-const devotionalSynth = new DevotionalSoundSynth();
-
-// Helper to resolve clean audio path for Web and Android Capacitor webview
+// Helper to resolve audio paths for web and Android Capacitor webviews
 const resolveAudioUrl = (url?: string): string => {
   if (!url || url.trim() === '') {
-    return 'audio/chhath_folk_tradition.wav';
+    return 'audio/kaanche_hi_bansh.mp3';
   }
   if (url.startsWith('blob:') || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
     return url;
@@ -121,6 +47,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const songs = db.getSongs();
   const [currentSong, setCurrentSong] = useState<Song | null>(songs[0] || null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(songs[0]?.duration || 300);
   const [volume, setVolumeState] = useState(1);
@@ -132,26 +59,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const sleepTimerIntervalRef = useRef<any>(null);
-
-  // Pre-unlock AudioContext on first user interaction (touch or click)
-  useEffect(() => {
-    const unlock = () => {
-      devotionalSynth.init();
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioCtx) {
-        const temp = new AudioCtx();
-        if (temp.state === 'suspended') {
-          temp.resume().catch(() => {});
-        }
-      }
-    };
-    window.addEventListener('touchstart', unlock, { once: true });
-    window.addEventListener('click', unlock, { once: true });
-    return () => {
-      window.removeEventListener('touchstart', unlock);
-      window.removeEventListener('click', unlock);
-    };
-  }, []);
 
   // Initialize Audio Element
   useEffect(() => {
@@ -167,9 +74,27 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const onLoadedMetadata = () => {
+      setIsLoading(false);
       if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration) && audio.duration > 0) {
         setDuration(audio.duration);
       }
+    };
+
+    const onCanPlay = () => {
+      setIsLoading(false);
+    };
+
+    const onWaiting = () => {
+      setIsLoading(true);
+    };
+
+    const onPlaying = () => {
+      setIsLoading(false);
+      setIsPlaying(true);
+    };
+
+    const onPause = () => {
+      setIsPlaying(false);
     };
 
     const onEnded = () => {
@@ -182,20 +107,36 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const onError = (e: any) => {
-      console.warn('Audio tag playback error, falling back to devotional synth:', e);
-      if (isPlaying) {
-        devotionalSynth.play();
+      console.warn('Audio tag playback error:', audio.src, e);
+      setIsLoading(false);
+      // If an online stream failed, fall back to bundled authentic offline track
+      if (audio.src && (audio.src.startsWith('http://') || audio.src.startsWith('https://') || audio.src.includes('archive.org'))) {
+        console.log('Online stream unavailable, falling back to bundled offline track: audio/kaanche_hi_bansh.mp3');
+        audio.src = 'audio/kaanche_hi_bansh.mp3';
+        audio.play()
+          .then(() => setIsPlaying(true))
+          .catch(() => setIsPlaying(false));
+      } else {
+        setIsPlaying(false);
       }
     };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
+    audio.addEventListener('canplay', onCanPlay);
+    audio.addEventListener('waiting', onWaiting);
+    audio.addEventListener('playing', onPlaying);
+    audio.addEventListener('pause', onPause);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('error', onError);
 
     return () => {
       audio.removeEventListener('timeupdate', onTimeUpdate);
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+      audio.removeEventListener('canplay', onCanPlay);
+      audio.removeEventListener('waiting', onWaiting);
+      audio.removeEventListener('playing', onPlaying);
+      audio.removeEventListener('pause', onPause);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('error', onError);
       audio.pause();
@@ -226,25 +167,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [currentSong, isPlaying]);
 
-  // Fallback ticker when using devotional synthesizer
-  useEffect(() => {
-    let timer: any = null;
-    if (isPlaying && (!audioElementRef.current?.src || audioElementRef.current.src === window.location.href)) {
-      timer = setInterval(() => {
-        setCurrentTime((prev) => {
-          if (prev >= duration) {
-            playNext();
-            return 0;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [isPlaying, duration, currentSong]);
-
   // Sleep Timer countdown
   useEffect(() => {
     if (sleepTimerIntervalRef.current) {
@@ -272,6 +194,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCurrentSong(song);
     setCurrentTime(0);
     setDuration(song.duration || 300);
+    setIsLoading(true);
+
     if (newQueue && newQueue.length > 0) {
       setQueue(newQueue);
     }
@@ -279,7 +203,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const audio = audioElementRef.current;
     if (audio) {
       const srcUrl = resolveAudioUrl(song.audioUrl);
-      devotionalSynth.stop();
       audio.pause();
       audio.src = srcUrl;
       audio.volume = volume;
@@ -291,40 +214,51 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         playPromise
           .then(() => {
             setIsPlaying(true);
+            setIsLoading(false);
           })
           .catch((err) => {
-            console.warn('Audio tag play failed, falling back to devotional synth:', err);
-            devotionalSynth.play();
-            setIsPlaying(true);
+            console.warn('Audio tag play failed, trying fallback offline track:', err);
+            if (srcUrl !== 'audio/kaanche_hi_bansh.mp3') {
+              audio.src = 'audio/kaanche_hi_bansh.mp3';
+              audio.play()
+                .then(() => {
+                  setIsPlaying(true);
+                  setIsLoading(false);
+                })
+                .catch(() => {
+                  setIsPlaying(false);
+                  setIsLoading(false);
+                });
+            } else {
+              setIsPlaying(false);
+              setIsLoading(false);
+            }
           });
       }
-    } else {
-      devotionalSynth.play();
-      setIsPlaying(true);
     }
   };
 
   const togglePlay = () => {
+    const audio = audioElementRef.current;
+    if (!audio) return;
+
     if (isPlaying) {
       pause();
     } else {
       if (currentSong) {
-        const audio = audioElementRef.current;
-        if (audio) {
-          if (!audio.src || audio.src === '' || audio.src === window.location.href) {
-            audio.src = resolveAudioUrl(currentSong.audioUrl);
-          }
-          audio.volume = volume;
-          audio.play()
-            .then(() => setIsPlaying(true))
-            .catch(() => {
-              devotionalSynth.play();
-              setIsPlaying(true);
-            });
-        } else {
-          devotionalSynth.play();
-          setIsPlaying(true);
+        if (!audio.src || audio.src === '' || audio.src === window.location.href) {
+          audio.src = resolveAudioUrl(currentSong.audioUrl);
         }
+        audio.volume = volume;
+        audio.play()
+          .then(() => setIsPlaying(true))
+          .catch((err) => {
+            console.warn('Play toggle failed, trying fallback offline track:', err);
+            audio.src = 'audio/kaanche_hi_bansh.mp3';
+            audio.play()
+              .then(() => setIsPlaying(true))
+              .catch(() => setIsPlaying(false));
+          });
       } else if (queue.length > 0) {
         playSong(queue[0]);
       }
@@ -335,8 +269,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (audioElementRef.current) {
       audioElementRef.current.pause();
     }
-    devotionalSynth.stop();
     setIsPlaying(false);
+    setIsLoading(false);
   };
 
   const playNext = () => {
@@ -417,6 +351,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       value={{
         currentSong,
         isPlaying,
+        isLoading,
         currentTime,
         duration,
         volume,
