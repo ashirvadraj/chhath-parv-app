@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { 
   ChevronDown, 
@@ -211,26 +211,23 @@ export const FullPlayerModal: React.FC = () => {
               <p className="font-semibold text-amber-300">
                 {currentSong.title}
               </p>
-              <p className="text-stone-300">
-                काँच ही बाँस के बहँगिया, बहँगी लचकत जाए।<br />
-                बहँगी लचकत जाए...<br />
-                बात जे पूछेला बटोहिया, बहँगी केकरा के जाए?<br />
-                बहँगी केकरा के जाए...
+              <p className="text-xs text-amber-400/80 italic">
+                {currentSong.artist} • {currentSong.category}
               </p>
-              <p className="text-amber-200/90 font-medium">
-                तू त आन्हर हउवे रे बटोहिया, बहँगी सुरुज देव के जाए।<br />
-                बहँगी छठी मईया के जाए...
-              </p>
-              <p className="text-stone-300">
-                केरवा जे फरेला घवद से, ओह पर सुगा मँडराय।<br />
-                मारबो रे सुगवा धनुख से, सुगा गिरे मुरझाय...
-              </p>
-              <p className="text-amber-200/90 font-medium">
-                उग हे सुरुज देव भिनसरवा, अरघ के रे बेर।<br />
-                अंगना में कोसी भरावे, छठी मईया के हेर...
-              </p>
+              <div className="whitespace-pre-line text-stone-200 leading-relaxed">
+                {currentSong.lyrics ? currentSong.lyrics : (
+                  <>
+                    काँच ही बाँस के बहँगिया, बहँगी लचकत जाए।{"\n"}
+                    बात जे पूछेला बटोहिया, बहँगी केकरा के जाए?{"\n"}
+                    तू त आन्हर हउवे रे बटोहिया, बहँगी सुरुज देव के जाए।{"\n"}
+                    बहँगी छठी मईया के जाए...{"\n\n"}
+                    केरवा जे फरेला घवद से, ओह पर सुगा मँडराय।{"\n"}
+                    उग हे सुरुज देव भिनसरवा, अरघ के रे बेर...
+                  </>
+                )}
+              </div>
               <div className="text-[11px] text-stone-400 pt-3 border-t border-white/10 italic">
-                * पारंपरिक लोक आस्था के बोल। क्षेत्रीय उच्चारण अनुसार शब्दों में सौम्य अंतर हो सकता है।
+                * {currentSong.sourceNote || 'पारंपरिक लोक आस्था के बोल। क्षेत्रीय उच्चारण अनुसार शब्दों में सौम्य अंतर हो सकता है।'}
               </div>
             </div>
           </div>

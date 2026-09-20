@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAudio } from '../context/AudioContext';
 import { db } from '../services/db';
@@ -25,6 +25,9 @@ export const GeetView: React.FC = () => {
   const categories = [
     'All',
     'Traditional Chhath Geet',
+    'Bhojpuri Chhath Geet',
+    'Maithili Chhath Geet',
+    'Hindi Devotional',
     'Sandhya Arghya',
     'Usha Arghya',
     'Chhathi Maiya',

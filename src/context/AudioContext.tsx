@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Song } from '../types';
 import { db } from '../services/db';
 
@@ -31,14 +31,14 @@ interface AudioContextType {
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
-// Web Audio synthesizer for legal devotional flute & tanpura tone if song has no external audio URL
+// Web Audio Multi-voice Tanpura & Bansuri synthesizer fallback (audible & meditative)
 class DevotionalSoundSynth {
   private ctx: AudioContext | null = null;
-  private osc: OscillatorNode | null = null;
+  private nodes: OscillatorNode[] = [];
   private gain: GainNode | null = null;
   private isRunning: boolean = false;
 
-  private init() {
+  public init() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioCtx) this.ctx = new AudioCtx();
@@ -54,48 +54,75 @@ class DevotionalSoundSynth {
       }
       if (this.isRunning) return;
 
-      this.osc = this.ctx.createOscillator();
+      this.stop(); // Clear any existing nodes
+
+      const now = this.ctx.currentTime;
       this.gain = this.ctx.createGain();
-
-      // Sa-Pa meditative tanpura devotional chord frequency (~220Hz / 330Hz)
-      this.osc.type = 'triangle';
-      this.osc.frequency.setValueAtTime(220, this.ctx.currentTime);
-
-      this.gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
-      this.gain.gain.exponentialRampToValueAtTime(0.08, this.ctx.currentTime + 1.5);
-
-      this.osc.connect(this.gain);
+      // Audible volume: 0.35 (clearly heard on phone speakers)
+      this.gain.gain.setValueAtTime(0.01, now);
+      this.gain.gain.exponentialRampToValueAtTime(0.35, now + 1.2);
       this.gain.connect(this.ctx.destination);
-      this.osc.start();
+
+      // Tanpura 4-string harmony (Pa=196Hz, Sa=261.63Hz, Sa=261.63Hz, Sa=130.81Hz)
+      const freqs = [196.0, 261.63, 261.63, 130.81];
+      freqs.forEach((freq, idx) => {
+        if (!this.ctx || !this.gain) return;
+        const osc = this.ctx.createOscillator();
+        const strGain = this.ctx.createGain();
+        osc.type = idx === 0 ? 'sine' : idx === 3 ? 'triangle' : 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        strGain.gain.setValueAtTime(0.2, now);
+        osc.connect(strGain);
+        strGain.connect(this.gain);
+        osc.start(now);
+        this.nodes.push(osc);
+      });
+
       this.isRunning = true;
-    } catch {}
+    } catch (e) {
+      console.warn('Devotional synth start error:', e);
+    }
   }
 
   stop() {
     try {
       if (this.gain && this.ctx) {
-        this.gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.5);
+        this.gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.3);
       }
       setTimeout(() => {
-        if (this.osc) {
-          try { this.osc.stop(); } catch {}
-          this.osc.disconnect();
-          this.osc = null;
-        }
+        this.nodes.forEach((n) => {
+          try {
+            n.stop();
+            n.disconnect();
+          } catch {}
+        });
+        this.nodes = [];
         this.isRunning = false;
-      }, 500);
+      }, 350);
     } catch {}
   }
 }
 
 const devotionalSynth = new DevotionalSoundSynth();
 
+// Helper to resolve clean audio path for Web and Android Capacitor webview
+const resolveAudioUrl = (url?: string): string => {
+  if (!url || url.trim() === '') {
+    return 'audio/chhath_folk_tradition.wav';
+  }
+  if (url.startsWith('blob:') || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  return url.startsWith('/') ? url.slice(1) : url;
+};
+
 export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const songs = db.getSongs();
   const [currentSong, setCurrentSong] = useState<Song | null>(songs[0] || null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(songs[0]?.duration || 320);
+  const [duration, setDuration] = useState(songs[0]?.duration || 300);
   const [volume, setVolumeState] = useState(1);
   const [isShuffle, setIsShuffle] = useState(false);
   const [repeatMode, setRepeatMode] = useState<'off' | 'all' | 'one'>('all');
@@ -106,15 +133,41 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const sleepTimerIntervalRef = useRef<any>(null);
 
+  // Pre-unlock AudioContext on first user interaction (touch or click)
+  useEffect(() => {
+    const unlock = () => {
+      devotionalSynth.init();
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) {
+        const temp = new AudioCtx();
+        if (temp.state === 'suspended') {
+          temp.resume().catch(() => {});
+        }
+      }
+    };
+    window.addEventListener('touchstart', unlock, { once: true });
+    window.addEventListener('click', unlock, { once: true });
+    return () => {
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('click', unlock);
+    };
+  }, []);
+
   // Initialize Audio Element
   useEffect(() => {
     const audio = new Audio();
-    audio.preload = 'metadata';
+    audio.preload = 'auto';
     audioElementRef.current = audio;
 
     const onTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
-      if (audio.duration && !isNaN(audio.duration)) {
+      if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+        setDuration(audio.duration);
+      }
+    };
+
+    const onLoadedMetadata = () => {
+      if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration) && audio.duration > 0) {
         setDuration(audio.duration);
       }
     };
@@ -128,19 +181,21 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     };
 
-    const onError = () => {
-      // If network stream fails or is placeholder, fall back to soft synth so playback never crashes
+    const onError = (e: any) => {
+      console.warn('Audio tag playback error, falling back to devotional synth:', e);
       if (isPlaying) {
         devotionalSynth.play();
       }
     };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
+    audio.addEventListener('loadedmetadata', onLoadedMetadata);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('error', onError);
 
     return () => {
       audio.removeEventListener('timeupdate', onTimeUpdate);
+      audio.removeEventListener('loadedmetadata', onLoadedMetadata);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('error', onError);
       audio.pause();
@@ -171,7 +226,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [currentSong, isPlaying]);
 
-  // Synthetic timer ticker for preview/placeholder audio tracks
+  // Fallback ticker when using devotional synthesizer
   useEffect(() => {
     let timer: any = null;
     if (isPlaying && (!audioElementRef.current?.src || audioElementRef.current.src === window.location.href)) {
@@ -205,7 +260,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           }
           return prev - 1;
         });
-      }, 60000); // every minute
+      }, 60000); // Every minute
     }
 
     return () => {
@@ -223,20 +278,28 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const audio = audioElementRef.current;
     if (audio) {
-      if (song.audioUrl && song.audioUrl.trim() !== '') {
-        devotionalSynth.stop();
-        audio.src = song.audioUrl;
-        audio.play().then(() => setIsPlaying(true)).catch(() => {
-          devotionalSynth.play();
-          setIsPlaying(true);
-        });
-      } else {
-        audio.pause();
-        audio.src = '';
-        devotionalSynth.play();
-        setIsPlaying(true);
+      const srcUrl = resolveAudioUrl(song.audioUrl);
+      devotionalSynth.stop();
+      audio.pause();
+      audio.src = srcUrl;
+      audio.volume = volume;
+      audio.loop = (repeatMode === 'one');
+      audio.currentTime = 0;
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((err) => {
+            console.warn('Audio tag play failed, falling back to devotional synth:', err);
+            devotionalSynth.play();
+            setIsPlaying(true);
+          });
       }
     } else {
+      devotionalSynth.play();
       setIsPlaying(true);
     }
   };
@@ -246,14 +309,22 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       pause();
     } else {
       if (currentSong) {
-        if (currentSong.audioUrl && audioElementRef.current && currentSong.audioUrl.trim() !== '') {
-          audioElementRef.current.play().catch(() => {
-            devotionalSynth.play();
-          });
+        const audio = audioElementRef.current;
+        if (audio) {
+          if (!audio.src || audio.src === '' || audio.src === window.location.href) {
+            audio.src = resolveAudioUrl(currentSong.audioUrl);
+          }
+          audio.volume = volume;
+          audio.play()
+            .then(() => setIsPlaying(true))
+            .catch(() => {
+              devotionalSynth.play();
+              setIsPlaying(true);
+            });
         } else {
           devotionalSynth.play();
+          setIsPlaying(true);
         }
-        setIsPlaying(true);
       } else if (queue.length > 0) {
         playSong(queue[0]);
       }
@@ -308,9 +379,10 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const setVolume = (vol: number) => {
-    setVolumeState(vol);
+    const clamped = Math.max(0, Math.min(1, vol));
+    setVolumeState(clamped);
     if (audioElementRef.current) {
-      audioElementRef.current.volume = vol;
+      audioElementRef.current.volume = clamped;
     }
   };
 
@@ -333,10 +405,10 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const toggleFavorite = (songId: string) => {
     const updatedSongs = db.toggleFavoriteSong(songId);
     if (currentSong && currentSong.id === songId) {
-      setCurrentSong((prev) => prev ? { ...prev, isFavorite: !prev.isFavorite } : null);
+      setCurrentSong((prev) => (prev ? { ...prev, isFavorite: !prev.isFavorite } : null));
     }
-    setQueue((prevQueue) => 
-      prevQueue.map(s => s.id === songId ? { ...s, isFavorite: !s.isFavorite } : s)
+    setQueue((prevQueue) =>
+      prevQueue.map((s) => (s.id === songId ? { ...s, isFavorite: !s.isFavorite } : s))
     );
   };
 

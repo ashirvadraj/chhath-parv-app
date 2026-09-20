@@ -1,4 +1,4 @@
-﻿export type SupportedLanguage = 'hi' | 'bho' | 'en';
+export type SupportedLanguage = 'hi' | 'bho' | 'en';
 
 export interface UserSettings {
   language: SupportedLanguage;
@@ -63,6 +63,7 @@ export interface Song {
   duration: number; // in seconds
   audioUrl: string;
   lyricsId?: string;
+  lyrics?: string;
   isFavorite?: boolean;
   isLocal?: boolean;
   isOffline?: boolean;

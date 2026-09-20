@@ -78,8 +78,8 @@ public class MediaNotificationPlugin extends Plugin {
     private PowerManager.WakeLock wakeLock;
     private WifiManager.WifiLock wifiLock;
 
-    private String lastTitle = "Sunehre Geet";
-    private String lastArtist = "Playing Classic Melody";
+    private String lastTitle = "छठ पर्व";
+    private String lastArtist = "छठी मईया के पावन गीत";
     private String lastCoverUrl = null;
     private boolean lastIsPlaying = false;
     private Bitmap lastBitmap = null;

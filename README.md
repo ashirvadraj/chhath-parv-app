@@ -45,12 +45,14 @@ You can download and install the compiled Android APK directly onto your phone:
 - **Quick Action Grid**: One-tap access to Puja Vidhi, Ghat Checklist, Prasad, Geet, Aarti, and Calendar.
 - **Popular Chhath Geet**: Preview list with quick playback.
 
-### 2. 🎵 Chhath Geet & Audio Player Architecture
-- **Categories**: Traditional Folk, Sandhya Arghya, Usha Arghya, Chhathi Maiya, Kharna, Instrumental, Local.
+### 2. 🎵 50 Chhath Geet Anthology & Offline Audio Player
+- **50 Iconic Songs**: Complete anthology of 50 traditional and modern Chhath Puja geet across Bhojpuri, Maithili, and Hindi (Sharda Sinha, Anuradha Paudwal, Pawan Singh, Khesari Lal Yadav, Manoj Tiwari, Devi, Kalpana Patowary, and folk masters).
+- **Offline High-Fidelity Audio**: 8 authentic devotional audio recordings bundled directly into the app (traditional Bansuri flute, Sa-Pa Tanpura drone, bronze temple bells, conch shell Shankh calls, and Dholak rhythms) playing 100% offline with zero internet required.
+- **Dynamic Devanagari Lyrics**: Authentic full lyrics for every song with responsive font zoom controls (`A-` / `A+`) and auto-scroll.
+- **Categories**: Traditional Chhath Geet, Bhojpuri Chhath Geet, Maithili Chhath Geet, Hindi Devotional, Sandhya Arghya, Usha Arghya, Chhathi Maiya, Kharna & Nahay Khay, Instrumental, Local.
 - **Import Local Music**: Devotees can import their own legally owned `.mp3`, `.wav`, `.m4a`, `.aac`, `.flac` audio files directly into Chhath playlists.
 - **Player Controls**: Play, pause, 10s rewind, 10s forward, repeat modes, shuffle, sleep timer (15–60 mins), and favorites.
 - **Persistent Mini-Player**: Bottom mini-player pinned above navigation bar.
-- **Lyrics Support**: Traditional devotional verses with text zoom controls (`A-` / `A+`).
 - **Android Foreground Media Service**: Configured `MediaPlaybackService` with `MediaSessionCompat` for notification bar, lock screen, and Bluetooth playback.
 
 ### 3. 📖 Puja Vidhi & Devotional Aarti-Mantra
