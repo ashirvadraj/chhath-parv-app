@@ -28,48 +28,70 @@ export const GeetView: React.FC = () => {
   const [viewMode, setViewMode] = useState<'by_singer' | 'all'>('by_singer');
   const [songsList, setSongsList] = useState<Song[]>(() => db.getSongs());
 
+  // Definitive Singer Categories with precise matchers for authentic catalog
+  const SINGER_SECTIONS = useMemo(() => [
+    {
+      name: 'शारदा सिन्हा (Sharda Sinha)',
+      shortName: 'शारदा सिन्हा',
+      matcher: (song: Song) => /शारदा सिन्हा|sharda sinha/i.test(song.artist)
+    },
+    {
+      name: 'सोनू निगम (Sonu Nigam)',
+      shortName: 'सोनू निगम',
+      matcher: (song: Song) => /सोनू निगम|sonu nigam/i.test(song.artist)
+    },
+    {
+      name: 'पलक मुच्छल (Palak Muchhal)',
+      shortName: 'पलक मुच्छल',
+      matcher: (song: Song) => /पलक मुच्छल|palak muchhal/i.test(song.artist)
+    },
+    {
+      name: 'पवन सिंह (Pawan Singh)',
+      shortName: 'पवन सिंह',
+      matcher: (song: Song) => /पवन सिंह|pawan singh/i.test(song.artist)
+    },
+    {
+      name: 'खेसारी लाल यादव (Khesari Lal Yadav)',
+      shortName: 'खेसारी लाल',
+      matcher: (song: Song) => /खेसारी लाल|khesari/i.test(song.artist)
+    },
+    {
+      name: 'मनोज तिवारी (Manoj Tiwari)',
+      shortName: 'मनोज तिवारी',
+      matcher: (song: Song) => /मनोज तिवारी|manoj tiwari/i.test(song.artist)
+    },
+    {
+      name: 'अनुराधा पौडवाल (Anuradha Paudwal)',
+      shortName: 'अनुराधा पौडवाल',
+      matcher: (song: Song) => /अनुराधा पौडवाल|anuradha/i.test(song.artist)
+    },
+    {
+      name: 'मैथिली पारंपरिक लोकगीत',
+      shortName: 'मैथिली लोकगीत',
+      matcher: (song: Song) => /मैथिली|maithili/i.test(song.artist) || song.language === 'Maithili'
+    },
+    {
+      name: 'पारंपरिक व अन्य लोकगीत',
+      shortName: 'पारंपरिक छठ गीत',
+      matcher: (song: Song) => 
+        !/शारदा|अनुराधा|पवन सिंह|खेसारी|मनोज तिवारी|सोनू निगम|पलक मुच्छल/i.test(song.artist) &&
+        !/मैथिली|maithili/i.test(song.artist) &&
+        song.language !== 'Maithili'
+    }
+  ], []);
+
   // Distinct Singers extracted with count
   const singerStats = useMemo(() => {
-    const stats: { [key: string]: { name: string; count: number; songs: Song[] } } = {};
-    
-    songsList.forEach((song) => {
-      // Normalize singer name for groupings
-      let normalized = song.artist.trim();
-      if (normalized.includes('शारदा सिन्हा') || normalized.toLowerCase().includes('sharda sinha')) {
-        normalized = 'शारदा सिन्हा (Sharda Sinha)';
-      } else if (normalized.includes('अनुराधा पौडवाल') || normalized.toLowerCase().includes('anuradha')) {
-        normalized = 'अनुराधा पौडवाल (Anuradha Paudwal)';
-      } else if (normalized.includes('पवन सिंह') || normalized.toLowerCase().includes('pawan singh')) {
-        normalized = 'पवन सिंह (Pawan Singh)';
-      } else if (normalized.includes('खेसारी लाल') || normalized.toLowerCase().includes('khesari')) {
-        normalized = 'खेसारी लाल यादव (Khesari Lal Yadav)';
-      } else if (normalized.includes('मनोज तिवारी') || normalized.toLowerCase().includes('manoj tiwari')) {
-        normalized = 'मनोज तिवारी (Manoj Tiwari)';
-      } else if (normalized.includes('कल्पना') || normalized.toLowerCase().includes('kalpana')) {
-        normalized = 'कल्पना पटोवारी (Kalpana Patowary)';
-      } else if (normalized.includes('देवी') || normalized.toLowerCase().includes('devi')) {
-        normalized = 'देवी (Devi)';
-      } else if (normalized.includes('सोनू निगम') || normalized.toLowerCase().includes('sonu nigam')) {
-        normalized = 'सोनू निगम (Sonu Nigam)';
-      } else if (normalized.includes('पलक मुच्छल') || normalized.toLowerCase().includes('palak muchhal')) {
-        normalized = 'पलक मुच्छल (Palak Muchhal)';
-      } else if (normalized.includes('मैथिली') || normalized.toLowerCase().includes('maithili')) {
-        normalized = 'मैथिली पारंपरिक लोकगीत';
-      } else if (normalized.includes('सूर्य वंदना') || normalized.includes('स्तुति')) {
-        normalized = 'सूर्य वंदना एवं स्तुति';
-      } else {
-        normalized = 'पारंपरिक व अन्य लोकगीत';
-      }
-
-      if (!stats[normalized]) {
-        stats[normalized] = { name: normalized, count: 0, songs: [] };
-      }
-      stats[normalized].count += 1;
-      stats[normalized].songs.push(song);
-    });
-
-    return Object.values(stats).sort((a, b) => b.count - a.count);
-  }, [songsList]);
+    return SINGER_SECTIONS.map((sec) => {
+      const matchedSongs = songsList.filter(sec.matcher);
+      return {
+        name: sec.name,
+        shortName: sec.shortName,
+        count: matchedSongs.length,
+        songs: matchedSongs
+      };
+    }).filter(sec => sec.count > 0);
+  }, [songsList, SINGER_SECTIONS]);
 
   const categories = [
     'All',
@@ -130,12 +152,18 @@ export const GeetView: React.FC = () => {
 
       let matchesSinger = true;
       if (selectedSinger !== 'All') {
-        matchesSinger = song.artist.includes(selectedSinger) || selectedSinger.includes(song.artist);
+        const targetSec = SINGER_SECTIONS.find(s => s.name === selectedSinger);
+        if (targetSec) {
+          matchesSinger = targetSec.matcher(song);
+        } else {
+          const core = selectedSinger.split(' (')[0].trim();
+          matchesSinger = song.artist.toLowerCase().includes(core.toLowerCase()) || song.artist.includes(core);
+        }
       }
 
       return matchesSearch && matchesCategory && matchesLanguage && matchesFavorite && matchesSinger;
     });
-  }, [songsList, searchQuery, selectedCategory, selectedSinger, selectedLanguage, onlyFavorites]);
+  }, [songsList, searchQuery, selectedCategory, selectedSinger, selectedLanguage, onlyFavorites, SINGER_SECTIONS]);
 
   const handlePlaySingerSongs = (songs: Song[]) => {
     if (songs.length > 0) {

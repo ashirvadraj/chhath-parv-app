@@ -32,14 +32,14 @@ export const MoreView: React.FC = () => {
   const [selectedPhoto, setSelectedPhoto] = useState<{ title: string; category: string; url: string } | null>(null);
 
   const [galleryImages, setGalleryImages] = useState<{ id: string; title: string; category: string; url: string }[]>([
-    { id: '1', title: 'संध्या अर्घ्य (पहिला अरग)', category: 'Sandhya Arghya', url: '/gallery/sandhya_arghya.svg' },
-    { id: '2', title: 'उषा अर्घ्य (भोरवा अरग)', category: 'Usha Arghya', url: '/gallery/usha_arghya.svg' },
-    { id: '3', title: 'बांस का पावन दउरा व ईख', category: 'Chhath Daura', url: '/gallery/chhath_daura.svg' },
-    { id: '4', title: 'बांस का सूप व पूजन फल', category: 'Pavitra Soop', url: '/gallery/pavitra_soop.svg' },
-    { id: '5', title: 'पवित्र ठेकुआ महाप्रसाद', category: 'Thekua Prasad', url: '/gallery/thekua_prasad.svg' },
-    { id: '6', title: 'घाट पर कोसी भरना (दीपमाला)', category: 'Kosi Bharai', url: '/gallery/kosi_bharai.svg' },
-    { id: '7', title: 'खरना रसियाव-रोटी महाप्रसाद', category: 'Kharna Prasad', url: '/gallery/kharna_prasad.svg' },
-    { id: '8', title: 'नहाय-खाय कद्दू-भात', category: 'Nahay Khay', url: '/gallery/nahay_khay.svg' }
+    { id: '1', title: 'संध्या अर्घ्य (पहिला अरग)', category: 'Sandhya Arghya', url: '/gallery/sandhya_arghya.jpg' },
+    { id: '2', title: 'उषा अर्घ्य (भोरवा अरग)', category: 'Usha Arghya', url: '/gallery/usha_arghya.jpg' },
+    { id: '3', title: 'बांस का पावन दउरा व ईख', category: 'Chhath Daura', url: '/gallery/chhath_daura.jpg' },
+    { id: '4', title: 'बांस का सूप व पूजन फल', category: 'Pavitra Soop', url: '/gallery/pavitra_soop.jpg' },
+    { id: '5', title: 'पवित्र ठेकुआ महाप्रसाद', category: 'Thekua Prasad', url: '/gallery/thekua_prasad.jpg' },
+    { id: '6', title: 'घाट पर कोसी भरना (दीपमाला)', category: 'Kosi Bharai', url: '/gallery/kosi_bharai.jpg' },
+    { id: '7', title: 'खरना रसियाव-रोटी महाप्रसाद', category: 'Kharna Prasad', url: '/gallery/kharna_prasad.jpg' },
+    { id: '8', title: 'नहाय-खाय कद्दू-भात', category: 'Nahay Khay', url: '/gallery/nahay_khay.jpg' }
   ]);
 
   // Handle Note Save
@@ -436,11 +436,11 @@ export const MoreView: React.FC = () => {
 
           <div className="space-y-2">
             {[
-              { title: 'नहाय-खाय की सामग्री व्यवस्था', time: '14 नवंबर • सायं 06:00' },
-              { title: 'खरना प्रसाद की तैयारी (रसियाव-रोटी)', time: '16 नवंबर • सायं 04:30' },
-              { title: 'ठेकुआ व सूप सजावट', time: '17 नवंबर • प्रातः 11:00' },
-              { title: 'संध्या घाट प्रस्थान (पहिला अरग)', time: '17 नवंबर • अपराह्न 03:00' },
-              { title: 'उषा अर्घ्य हेतु जागरण एवं घाट प्रस्थान', time: '18 नवंबर • भोर 03:30' },
+              { title: 'नहाय-खाय की सामग्री व्यवस्था', time: '13 नवंबर (शुक्रवार) • सायं 06:00' },
+              { title: 'खरना प्रसाद की तैयारी (रसियाव-रोटी)', time: '14 नवंबर (शनिवार) • सायं 04:30' },
+              { title: 'ठेकुआ व सूप सजावट', time: '15 नवंबर (रविवार) • प्रातः 11:00' },
+              { title: 'संध्या घाट प्रस्थान (पहिला अरग)', time: '15 नवंबर (रविवार) • अपराह्न 03:00' },
+              { title: 'उषा अर्घ्य हेतु जागरण एवं घाट प्रस्थान', time: '16 नवंबर (सोमवार) • भोर 03:30' },
             ].map((rem, idx) => (
               <div 
                 key={idx}
