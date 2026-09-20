@@ -9,11 +9,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ashirvadraj/chhath-parv-app/raw/main/ChhathParv.apk">
+  <a href="https://github.com/ashirvadraj/chhath-parv-app/releases/latest/download/ChhathParv.apk">
     <img src="https://img.shields.io/badge/Download-ChhathParv.apk-orange?style=for-the-badge&logo=android" alt="Download APK" />
   </a>
-  <a href="https://github.com/ashirvadraj/chhath-parv-app/releases/tag/v1.2.0">
-    <img src="https://img.shields.io/badge/Release-v1.2.0-green?style=for-the-badge&logo=github" alt="Release v1.2.0" />
+  <a href="https://github.com/ashirvadraj/chhath-parv-app/releases/tag/v1.4.0">
+    <img src="https://img.shields.io/badge/Release-v1.4.0-green?style=for-the-badge&logo=github" alt="Release v1.4.0" />
   </a>
 </p>
 
@@ -24,10 +24,28 @@
 
 ---
 
-## 📲 Direct APK Download
-You can download and install the compiled Android APK directly onto your phone:
-👉 [**Download from GitHub Release (v1.2.0 Latest APK)**](https://github.com/ashirvadraj/chhath-parv-app/releases/download/v1.2.0/ChhathParv.apk)
-👉 [**Download ChhathParv.apk (Direct from Repo)**](https://github.com/ashirvadraj/chhath-parv-app/raw/main/ChhathParv.apk)
+## 📲 Direct APK Download & Installation Guide
+
+### 📥 1. Download Latest APK (v1.4.0)
+👉 [**Download ChhathParv.apk (Direct Download ~53 MB)**](https://github.com/ashirvadraj/chhath-parv-app/releases/latest/download/ChhathParv.apk)  
+👉 [**View Release Assets & Changelog on GitHub Releases**](https://github.com/ashirvadraj/chhath-parv-app/releases/tag/v1.4.0)
+
+> ⚠️ **IMPORTANT**: Do NOT download from `raw.githubusercontent.com` or repository file view directly, as Git LFS serves a small pointer text file instead of the actual APK. Always use the GitHub Releases link above.
+
+### ⚙️ 2. How to Install on Android Phone (Troubleshooting)
+
+If you see **"App not installed"** or **"Problem parsing package"**, follow these simple steps:
+
+1. **Uninstall Previous Version (Most Common Issue)**:
+   - If an earlier version of the app is already installed on your device, **uninstall it first** (Long press the app icon on home screen ➡️ **Uninstall**).
+   - Android blocks installing updates over an existing app if the previous version was signed with an earlier key.
+2. **Enable Unknown Apps Permission**:
+   - When Chrome or your File Manager asks: *"For your security, your phone is not allowed to install unknown apps from this source"*, tap **Settings** ➡️ Toggle **"Allow from this source"** ON ➡️ Tap Back ➡️ Tap **Install**.
+3. **Google Play Protect Warning**:
+   - Since this APK is distributed directly via GitHub and self-signed, Google Play Protect may show: *"Unsafe app blocked"* or *"Blocked by Play Protect"*.
+   - Tap **"More details"** (or down arrow ⌄) ➡️ Tap **"Install anyway"**.
+4. **Verify File Size**:
+   - Check that the downloaded `ChhathParv.apk` file is **~53.7 MB** in your phone's *Downloads* folder (not a small file of a few KB).
 
 ---
 
